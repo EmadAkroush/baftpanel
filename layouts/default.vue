@@ -1,17 +1,28 @@
 <template>
-  <div class="flex min-h-screen w-full overflow-hidden bg-main">
+  <div class="layout-wrapper">
 
     <!-- Sidebar -->
-    <div class="w-full md:w-auto border-r border-purple-900/20">
-      <LayoutSidebar />
-    </div>
+    <LayoutSidebar
+      :collapsed="collapsed"
+      @toggle="toggleSidebar"
+    />
 
-    <!-- Content -->
-    <div class="flex-1 flex flex-col">
+    <!-- Main -->
+    <div
+      class="main-wrapper"
+      :class="collapsed ? 'main-expanded' : 'main-shrink'"
+    >
 
-      <LayoutNavbar />
+      <!-- Navbar -->
+      <header class="navbar-wrapper">
+        <LayoutNavbar
+          :collapsed="collapsed"
+          @toggle="toggleSidebar"
+        />
+      </header>
 
-      <main class="p-4 text-white">
+      <!-- Content -->
+      <main class="content-wrapper">
         <slot />
       </main>
 
@@ -20,8 +31,66 @@
   </div>
 </template>
 
-<style>
-.bg-main {
-  background: #090040;
+<script setup>
+import { ref } from "vue";
+
+const collapsed = ref(false);
+
+const toggleSidebar = () => {
+  collapsed.value = !collapsed.value;
+};
+</script>
+
+<style scoped>
+
+/* ===== Layout ===== */
+.layout-wrapper {
+  min-height: 100vh;
+  background: #F8F5F2;
+  direction: rtl;
 }
+
+/* ===== Main ===== */
+.main-wrapper {
+  min-height: 100vh;
+
+  transition:
+    margin-right .3s ease,
+    width .3s ease;
+}
+
+/* وقتی سایدبار بازه */
+.main-shrink {
+  margin-right: 280px;
+  width: calc(100% - 280px);
+}
+
+/* وقتی بسته است */
+.main-expanded {
+  margin-right: 92px;
+  width: calc(100% - 92px);
+}
+
+/* ===== Navbar ===== */
+.navbar-wrapper {
+  padding: 18px 24px;
+}
+
+/* ===== Content ===== */
+.content-wrapper {
+  padding: 24px;
+}
+
+/* ===== Mobile ===== */
+@media (max-width: 768px) {
+
+  .main-wrapper,
+  .main-shrink,
+  .main-expanded {
+    margin-right: 0 !important;
+    width: 100% !important;
+  }
+
+}
+
 </style>

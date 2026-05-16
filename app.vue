@@ -6,7 +6,7 @@
 <style>
 
 html {
-    direction: ltr;
+    direction: rtl;
     font-family: Roboto !important;
 }
 
