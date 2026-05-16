@@ -187,6 +187,31 @@ const statCards = ref([
     change: "+۱۲٪",
     badgeClass: "success"
   },
+
+  {
+    title: "مجموع واریز",
+    value: "۸۹۲,۰۰۰,۰۰۰",
+    icon: "mdi mdi-bank-transfer-in",
+    change: "+۱۸٪",
+    badgeClass: "success"
+  },
+
+  {
+    title: "مجموع برداشت",
+    value: "۴۳۱,۰۰۰,۰۰۰",
+    icon: "mdi mdi-bank-transfer-out",
+    change: "+۶٪",
+    badgeClass: "danger"
+  },
+
+  {
+    title: "واریزی نتورک",
+    value: "۲۶۵,۰۰۰,۰۰۰",
+    icon: "mdi mdi-access-point-network",
+    change: "+۹٪",
+    badgeClass: "success"
+  },
+
   {
     title: "تعداد سفارشات",
     value: "۲۴۸",
@@ -194,6 +219,7 @@ const statCards = ref([
     change: "+۸٪",
     badgeClass: "success"
   },
+
   {
     title: "کاربران جدید",
     value: "۴۲",
@@ -201,6 +227,7 @@ const statCards = ref([
     change: "+۵٪",
     badgeClass: "success"
   },
+
   {
     title: "محصولات فعال",
     value: "۸۶",
@@ -263,7 +290,10 @@ const chartOptions = {
   plugins: {
     legend: {
       labels: {
-        color: "#5B2A4A"
+        color: "#5B2A4A",
+        font: {
+          family: "inherit"
+        }
       }
     }
   },
@@ -314,6 +344,7 @@ const orders = ref([
     status: "تحویل شده",
     statusClass: "success"
   },
+
   {
     id: 2,
     name: "پارسا احمدی",
@@ -322,6 +353,7 @@ const orders = ref([
     status: "در حال ارسال",
     statusClass: "pending"
   },
+
   {
     id: 3,
     name: "ترانه عزیزی",
@@ -396,35 +428,42 @@ const format = (val) =>
 }
 
 .stat-card {
-  background: white;
-  border-radius: 26px;
+  background: rgba(255,255,255,.75);
+  backdrop-filter: blur(12px);
+  border-radius: 28px;
   padding: 24px;
-  border: 1px solid rgba(217,165,179,.20);
+  border: 1px solid rgba(217,165,179,.18);
   display: flex;
   align-items: center;
   gap: 18px;
-  transition: .3s ease;
-  box-shadow: 0 10px 30px rgba(91,42,74,.05);
+  transition: .35s ease;
+  box-shadow:
+    0 10px 30px rgba(91,42,74,.05),
+    inset 0 1px 0 rgba(255,255,255,.8);
 }
 
 .stat-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 18px 40px rgba(91,42,74,.08);
+  transform: translateY(-6px);
+  box-shadow:
+    0 18px 45px rgba(91,42,74,.10),
+    inset 0 1px 0 rgba(255,255,255,.9);
 }
 
 .stat-icon {
-  width: 70px;
-  height: 70px;
-  border-radius: 22px;
+  width: 74px;
+  height: 74px;
+  border-radius: 24px;
   background: linear-gradient(
     135deg,
     rgba(91,42,74,.10),
-    rgba(200,169,107,.18)
+    rgba(200,169,107,.22)
   );
 
   display: flex;
   align-items: center;
   justify-content: center;
+
+  border: 1px solid rgba(200,169,107,.15);
 }
 
 .stat-icon i {
@@ -439,22 +478,25 @@ const format = (val) =>
 .stat-top {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   margin-bottom: 10px;
 }
 
 .stat-title {
   color: #5B2A4A;
   font-size: 14px;
+  font-weight: 600;
 }
 
 .stat-value {
   font-size: 28px;
   font-weight: 800;
   color: #1F1F24;
+  letter-spacing: -.5px;
 }
 
 .stat-badge {
-  padding: 4px 10px;
+  padding: 5px 12px;
   border-radius: 999px;
   font-size: 12px;
   font-weight: 700;
@@ -480,11 +522,14 @@ const format = (val) =>
 
 .chart-card,
 .orders-card {
-  background: white;
-  border-radius: 28px;
+  background: rgba(255,255,255,.78);
+  backdrop-filter: blur(12px);
+  border-radius: 30px;
   padding: 28px;
-  border: 1px solid rgba(217,165,179,.20);
-  box-shadow: 0 10px 30px rgba(91,42,74,.05);
+  border: 1px solid rgba(217,165,179,.18);
+  box-shadow:
+    0 10px 30px rgba(91,42,74,.05),
+    inset 0 1px 0 rgba(255,255,255,.8);
 }
 
 .large-card {
