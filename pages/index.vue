@@ -1,57 +1,173 @@
 <template>
-  <div class="dashboard-page p-6 min-h-screen">
+  <div class="dashboard-page">
 
-    <!-- HEADER -->
-    <div class="flex justify-between items-center mb-8">
-      <h1 class="text-2xl font-bold text-white">Admin Dashboard</h1>
+    <!-- ===== Header ===== -->
+    <div class="dashboard-header">
+
+      <div>
+        <h1 class="dashboard-title">
+          داشبورد مدیریت
+        </h1>
+
+        <p class="dashboard-subtitle">
+          مدیریت کامل فروشگاه بافت و بررسی عملکرد فروش
+        </p>
+      </div>
+
+      <button class="header-btn">
+        <i class="mdi mdi-bell-outline"></i>
+        <span>اعلان‌ها</span>
+      </button>
+
     </div>
 
-    <!-- STATS -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-      <Card v-for="item in statCards" :key="item.title" class="stat-card">
-        <template #title>
-          <div class="text-sm text-gray-400">{{ item.title }}</div>
-        </template>
-        <template #content>
-          <div class="text-2xl font-bold text-white">{{ item.value }}</div>
-        </template>
-      </Card>
+    <!-- ===== Stats ===== -->
+    <div class="stats-grid">
+
+      <div
+        v-for="item in statCards"
+        :key="item.title"
+        class="stat-card"
+      >
+
+        <div class="stat-icon">
+          <i :class="item.icon"></i>
+        </div>
+
+        <div class="stat-content">
+
+          <div class="stat-top">
+
+            <span class="stat-title">
+              {{ item.title }}
+            </span>
+
+            <span
+              class="stat-badge"
+              :class="item.badgeClass"
+            >
+              {{ item.change }}
+            </span>
+
+          </div>
+
+          <h2 class="stat-value">
+            {{ item.value }}
+          </h2>
+
+        </div>
+
+      </div>
+
     </div>
 
-    <!-- CHARTS -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- ===== Charts ===== -->
+    <div class="charts-grid">
 
-      <!-- PROFIT -->
-      <Card class="chart-card">
-        <template #title>Profit Chart</template>
-        <template #content>
-          <Chart type="bar" :data="profitChart" :options="chartOptions" />
-        </template>
-      </Card>
+      <!-- فروش -->
+      <div class="chart-card large-card">
 
-      <!-- VX -->
-      <Card class="chart-card">
-        <template #title>VX (Referral + Binary)</template>
-        <template #content>
-          <Chart type="bar" :data="vxChart" :options="chartOptions" />
-        </template>
-      </Card>
+        <div class="card-header">
+          <div>
+            <h3>فروش ماهانه</h3>
+            <p>میزان فروش ۳۰ روز اخیر</p>
+          </div>
 
-      <!-- DEPOSIT -->
-      <Card class="chart-card">
-        <template #title>Deposit Chart</template>
-        <template #content>
-          <Chart type="bar" :data="depositChart" :options="chartOptions" />
-        </template>
-      </Card>
+          <button class="card-action">
+            گزارش کامل
+          </button>
+        </div>
 
-      <!-- WITHDRAW -->
-      <Card class="chart-card">
-        <template #title>Withdraw Chart</template>
-        <template #content>
-          <Chart type="bar" :data="withdrawChart" :options="chartOptions" />
-        </template>
-      </Card>
+        <Chart
+          type="line"
+          :data="salesChart"
+          :options="chartOptions"
+          class="chart-style"
+        />
+
+      </div>
+
+      <!-- سفارشات -->
+      <div class="chart-card">
+
+        <div class="card-header">
+          <div>
+            <h3>وضعیت سفارشات</h3>
+            <p>بررسی سفارش‌های فروشگاه</p>
+          </div>
+        </div>
+
+        <Chart
+          type="doughnut"
+          :data="ordersChart"
+          :options="doughnutOptions"
+          class="chart-style"
+        />
+
+      </div>
+
+    </div>
+
+    <!-- ===== Recent Orders ===== -->
+    <div class="orders-card">
+
+      <div class="card-header mb-6">
+
+        <div>
+          <h3>آخرین سفارشات</h3>
+          <p>
+            جدیدترین خریدهای ثبت شده در فروشگاه
+          </p>
+        </div>
+
+        <button class="card-action">
+          مشاهده همه
+        </button>
+
+      </div>
+
+      <div class="orders-list">
+
+        <div
+          v-for="order in orders"
+          :key="order.id"
+          class="order-item"
+        >
+
+          <div class="order-user">
+
+            <div class="user-avatar">
+              {{ order.name.charAt(0) }}
+            </div>
+
+            <div>
+
+              <h4>
+                {{ order.name }}
+              </h4>
+
+              <p>
+                سفارش #{{ order.code }}
+              </p>
+
+            </div>
+
+          </div>
+
+          <div class="order-price">
+            {{ format(order.price) }} تومان
+          </div>
+
+          <div
+            class="order-status"
+            :class="order.statusClass"
+          >
+            {{ order.status }}
+          </div>
+
+        </div>
+
+      </div>
 
     </div>
 
@@ -59,162 +175,460 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
-import Card from "primevue/card";
+import { ref } from "vue";
 import Chart from "primevue/chart";
 
-definePageMeta({ middleware: "auth" });
-
-const { authUser } = useAuth();
-
 /* ===== Stats ===== */
-const statCards = ref([]);
+const statCards = ref([
+  {
+    title: "فروش امروز",
+    value: "۱۲۸,۰۰۰,۰۰۰",
+    icon: "mdi mdi-cash-multiple",
+    change: "+۱۲٪",
+    badgeClass: "success"
+  },
+  {
+    title: "تعداد سفارشات",
+    value: "۲۴۸",
+    icon: "mdi mdi-cart-outline",
+    change: "+۸٪",
+    badgeClass: "success"
+  },
+  {
+    title: "کاربران جدید",
+    value: "۴۲",
+    icon: "mdi mdi-account-group-outline",
+    change: "+۵٪",
+    badgeClass: "success"
+  },
+  {
+    title: "محصولات فعال",
+    value: "۸۶",
+    icon: "mdi mdi-hanger",
+    change: "-۲٪",
+    badgeClass: "danger"
+  }
+]);
 
-/* ===== Chart States ===== */
-const profitChart = ref({ labels: [], datasets: [] });
-const vxChart = ref({ labels: [], datasets: [] });
-const depositChart = ref({ labels: [], datasets: [] });
-const withdrawChart = ref({ labels: [], datasets: [] });
+/* ===== Sales Chart ===== */
+const salesChart = ref({
+  labels: [
+    "شنبه",
+    "یکشنبه",
+    "دوشنبه",
+    "سه‌شنبه",
+    "چهارشنبه",
+    "پنجشنبه",
+    "جمعه"
+  ],
+
+  datasets: [
+    {
+      label: "فروش",
+      data: [12, 19, 8, 15, 21, 18, 26],
+      borderColor: "#5B2A4A",
+      backgroundColor: "rgba(200,169,107,.18)",
+      tension: 0.4,
+      fill: true
+    }
+  ]
+});
+
+/* ===== Orders Chart ===== */
+const ordersChart = ref({
+  labels: [
+    "تحویل شده",
+    "در حال ارسال",
+    "لغو شده"
+  ],
+
+  datasets: [
+    {
+      data: [62, 28, 10],
+      backgroundColor: [
+        "#5B2A4A",
+        "#C8A96B",
+        "#D9A5B3"
+      ],
+      borderWidth: 0
+    }
+  ]
+});
 
 /* ===== Chart Options ===== */
 const chartOptions = {
   responsive: true,
+  maintainAspectRatio: false,
+
   plugins: {
-    legend: { labels: { color: "#ccc" } },
+    legend: {
+      labels: {
+        color: "#5B2A4A"
+      }
+    }
   },
+
   scales: {
     x: {
-      ticks: { color: "#aaa" },
-      grid: { color: "rgba(255,255,255,0.05)" },
+      ticks: {
+        color: "#5B2A4A"
+      },
+      grid: {
+        color: "rgba(91,42,74,.06)"
+      }
     },
+
     y: {
-      ticks: { color: "#aaa" },
-      grid: { color: "rgba(255,255,255,0.05)" },
-    },
-  },
+      ticks: {
+        color: "#5B2A4A"
+      },
+      grid: {
+        color: "rgba(91,42,74,.06)"
+      }
+    }
+  }
 };
 
-/* ===== Fetch Data ===== */
-onMounted(async () => {
-  try {
-    const userId = authUser.value.user.id;
+const doughnutOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
 
-    /* ===== Stats (initial) ===== */
-    const stats = await $fetch("/api/admin");
+  plugins: {
+    legend: {
+      position: "bottom",
 
-    /* ===== PROFIT ===== */
-    const profit = await $fetch("/api/admin/profit", {
-      method: "POST",
-      body: { userId },
-    });
-
-    profitChart.value = {
-      labels: profit.labels,
-      datasets: [
-        {
-          label: "Profit",
-          data: profit.data,
-          backgroundColor: "#22c55e",
-        },
-      ],
-    };
-
-    /* ===== VX ===== */
-    const vx = await $fetch("/api/admin/vx", {
-      method: "POST",
-      body: { userId },
-    });
-
-    vxChart.value = {
-      labels: vx.labels,
-      datasets: [
-        {
-          label: "VX Income",
-          data: vx.data,
-          backgroundColor: "#a855f7",
-        },
-      ],
-    };
-
-    /* ===== DEPOSIT ===== */
-    const deposit = await $fetch("/api/admin/deposit", {
-      method: "POST",
-      body: { userId },
-    });
-
-    const totalDeposits = deposit.data.reduce((a, b) => a + b, 0);
-
-    depositChart.value = {
-      labels: deposit.labels,
-      datasets: [
-        {
-          label: "Deposits",
-          data: deposit.data,
-          backgroundColor: "#3b82f6",
-        },
-      ],
-    };
-
-    /* ===== WITHDRAW ===== */
-    const withdraw = await $fetch("/api/admin/withdraw", {
-      method: "POST",
-      body: { userId },
-    });
-
-    const totalWithdraw = withdraw.data.reduce((a, b) => a + b, 0);
-
-    withdrawChart.value = {
-      labels: withdraw.labels,
-      datasets: [
-        {
-          label: "Withdrawals",
-          data: withdraw.data,
-          backgroundColor: "#ef4444",
-        },
-      ],
-    };
-
-    /* ===== FINAL STAT CARDS ===== */
-    statCards.value = [
-      { title: "Total Users", value: stats.users },
-      { title: "Active Investments", value: stats.activeInvestment },
-      { title: "Total Deposits", value: totalDeposits },
-      { title: "Total Withdrawals", value: totalWithdraw },
-    ];
-
-  } catch (err) {
-    console.log("Dashboard error:", err);
+      labels: {
+        color: "#5B2A4A"
+      }
+    }
   }
-});
+};
+
+/* ===== Orders ===== */
+const orders = ref([
+  {
+    id: 1,
+    name: "نگار محمدی",
+    code: "548921",
+    price: 2850000,
+    status: "تحویل شده",
+    statusClass: "success"
+  },
+  {
+    id: 2,
+    name: "پارسا احمدی",
+    code: "548922",
+    price: 1750000,
+    status: "در حال ارسال",
+    statusClass: "pending"
+  },
+  {
+    id: 3,
+    name: "ترانه عزیزی",
+    code: "548923",
+    price: 3950000,
+    status: "لغو شده",
+    statusClass: "cancel"
+  }
+]);
+
+/* ===== Format ===== */
+const format = (val) =>
+  Number(val).toLocaleString("fa-IR");
 </script>
 
 <style scoped>
-
-/* PAGE BG */
 .dashboard-page {
-  background: radial-gradient(circle at top, #1a0f5a, #090040);
+  min-height: 100vh;
+  background: #F8F5F2;
+  padding: 32px;
+  direction: rtl;
 }
 
-/* STAT CARD */
-.stat-card {
-  background: rgba(71, 19, 150, 0.3);
-  border: 1px solid rgba(177, 59, 255, 0.2);
-  border-radius: 16px;
-  backdrop-filter: blur(10px);
+/* ===== Header ===== */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
 }
 
-/* CHART CARD */
-.chart-card {
-  background: rgba(71, 19, 150, 0.25);
-  border: 1px solid rgba(177, 59, 255, 0.2);
+.dashboard-title {
+  font-size: 34px;
+  font-weight: 800;
+  color: #1F1F24;
+}
+
+.dashboard-subtitle {
+  margin-top: 8px;
+  color: #5B2A4A;
+}
+
+.header-btn {
+  height: 52px;
+  padding: 0 20px;
   border-radius: 16px;
-  backdrop-filter: blur(12px);
+  border: none;
+  background: linear-gradient(
+    135deg,
+    #5B2A4A,
+    #C8A96B
+  );
   color: white;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 10px 25px rgba(91,42,74,.14);
 }
 
-/* FIX CHART TEXT */
-:deep(canvas) {
-  filter: brightness(1.1);
+.header-btn i {
+  font-size: 22px;
 }
 
+/* ===== Stats ===== */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+.stat-card {
+  background: white;
+  border-radius: 26px;
+  padding: 24px;
+  border: 1px solid rgba(217,165,179,.20);
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  transition: .3s ease;
+  box-shadow: 0 10px 30px rgba(91,42,74,.05);
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 18px 40px rgba(91,42,74,.08);
+}
+
+.stat-icon {
+  width: 70px;
+  height: 70px;
+  border-radius: 22px;
+  background: linear-gradient(
+    135deg,
+    rgba(91,42,74,.10),
+    rgba(200,169,107,.18)
+  );
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stat-icon i {
+  font-size: 34px;
+  color: #5B2A4A;
+}
+
+.stat-content {
+  flex: 1;
+}
+
+.stat-top {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.stat-title {
+  color: #5B2A4A;
+  font-size: 14px;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 800;
+  color: #1F1F24;
+}
+
+.stat-badge {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.success {
+  background: rgba(34,197,94,.12);
+  color: #16a34a;
+}
+
+.danger {
+  background: rgba(239,68,68,.12);
+  color: #dc2626;
+}
+
+/* ===== Charts ===== */
+.charts-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+
+.chart-card,
+.orders-card {
+  background: white;
+  border-radius: 28px;
+  padding: 28px;
+  border: 1px solid rgba(217,165,179,.20);
+  box-shadow: 0 10px 30px rgba(91,42,74,.05);
+}
+
+.large-card {
+  min-height: 430px;
+}
+
+.chart-style {
+  height: 320px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-header h3 {
+  font-size: 22px;
+  font-weight: 800;
+  color: #1F1F24;
+}
+
+.card-header p {
+  margin-top: 6px;
+  color: #5B2A4A;
+  font-size: 14px;
+}
+
+.card-action {
+  height: 42px;
+  padding: 0 18px;
+  border-radius: 14px;
+  border: 1px solid rgba(217,165,179,.25);
+  background: rgba(217,165,179,.10);
+  color: #5B2A4A;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+/* ===== Orders ===== */
+.orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.order-item {
+  padding: 18px;
+  border-radius: 20px;
+  background: #F8F5F2;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.order-user {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.user-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background: linear-gradient(
+    135deg,
+    #5B2A4A,
+    #C8A96B
+  );
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+}
+
+.order-user h4 {
+  color: #1F1F24;
+  font-weight: 700;
+}
+
+.order-user p {
+  color: #5B2A4A;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.order-price {
+  font-weight: 800;
+  color: #1F1F24;
+}
+
+.order-status {
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.pending {
+  background: rgba(200,169,107,.18);
+  color: #C8A96B;
+}
+
+.cancel {
+  background: rgba(217,165,179,.18);
+  color: #b45309;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 1200px) {
+
+  .stats-grid {
+    grid-template-columns: repeat(2,1fr);
+  }
+
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+@media (max-width: 768px) {
+
+  .dashboard-page {
+    padding: 18px;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .order-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+}
 </style>
