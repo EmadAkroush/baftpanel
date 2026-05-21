@@ -343,6 +343,21 @@
               </strong>
             </div>
 
+            <!-- TRACKING CODE FOR WITHDRAW -->
+            <div
+              v-if="selectedTransaction.type === 'withdraw'"
+              class="detail-item"
+            >
+              <span>شماره رهگیری بانک</span>
+
+              <strong>
+                {{
+                  selectedTransaction.bankTrackingCode ||
+                  "ثبت نشده"
+                }}
+              </strong>
+            </div>
+
             <!-- UPDATE -->
             <div class="update-box">
 
@@ -361,6 +376,15 @@
                 </option>
 
               </select>
+
+              <!-- TRACKING INPUT -->
+              <input
+                v-if="selectedTransaction.type === 'withdraw'"
+                v-model="bankTrackingCode"
+                type="text"
+                placeholder="شماره رهگیری بانک را وارد کنید"
+                class="tracking-input"
+              />
 
               <button
                 class="update-btn"
@@ -406,6 +430,7 @@ const transactions = ref([
     type: "withdraw",
     amount: 540,
     status: "pending",
+    bankTrackingCode: "",
     date: "2025/07/03"
   },
 
@@ -458,6 +483,8 @@ const showModal = ref(false)
 const selectedTransaction = ref(null)
 
 const newStatus = ref("")
+
+const bankTrackingCode = ref("")
 
 /* ===== OPTIONS ===== */
 
@@ -563,6 +590,9 @@ function openModal(tx) {
 
   newStatus.value = tx.status
 
+  bankTrackingCode.value =
+    tx.bankTrackingCode || ""
+
   showModal.value = true
 }
 
@@ -573,6 +603,14 @@ function updateStatus() {
   selectedTransaction.value.status =
     newStatus.value
 
+  if (
+    selectedTransaction.value.type ===
+    "withdraw"
+  ) {
+    selectedTransaction.value.bankTrackingCode =
+      bankTrackingCode.value
+  }
+
   const index =
     transactions.value.findIndex(
       item =>
@@ -581,8 +619,12 @@ function updateStatus() {
     )
 
   if (index !== -1) {
+
     transactions.value[index].status =
       newStatus.value
+
+    transactions.value[index].bankTrackingCode =
+      bankTrackingCode.value
   }
 
   showModal.value = false
@@ -599,9 +641,10 @@ const format = (value) => {
 
 .transactions-page{
   min-height:100vh;
-  background:#060816;
+  background:#060816 !important;
   padding:32px;
   direction:rtl;
+  color:white;
 }
 
 /* ===== HEADER ===== */
@@ -650,7 +693,7 @@ const format = (value) => {
 }
 
 .stat-card{
-  background:#0F172A;
+  background:#0F172A !important;
   border:1px solid rgba(255,255,255,.06);
   border-radius:24px;
   padding:22px;
@@ -701,7 +744,7 @@ const format = (value) => {
 /* ===== FILTERS ===== */
 
 .filters-card{
-  background:#0F172A;
+  background:#0F172A !important;
   border-radius:28px;
   padding:20px;
   display:flex;
@@ -730,7 +773,7 @@ const format = (value) => {
   height:54px;
   border-radius:16px;
   border:1px solid rgba(255,255,255,.08);
-  background:#111827;
+  background:#111827 !important;
   color:white;
   padding:0 16px;
 }
@@ -752,7 +795,7 @@ select:focus{
 /* ===== TABLE ===== */
 
 .table-card{
-  background:#0F172A;
+  background:#0F172A !important;
   border-radius:30px;
   overflow:hidden;
 }
@@ -768,7 +811,7 @@ table{
 }
 
 thead{
-  background:#111827;
+  background:#111827 !important;
 }
 
 th{
@@ -877,7 +920,7 @@ td{
   height:42px;
   border:none;
   border-radius:12px;
-  background:#111827;
+  background:#111827 !important;
   color:white;
   cursor:pointer;
   font-weight:700;
@@ -889,7 +932,7 @@ td{
 }
 
 .pages .active{
-  background:#7C3AED;
+  background:#7C3AED !important;
 }
 
 /* ===== MODAL ===== */
@@ -897,8 +940,8 @@ td{
 .modal-overlay{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,.6);
-  backdrop-filter:blur(8px);
+  background:rgba(0,0,0,.7);
+  backdrop-filter:blur(10px);
   display:flex;
   align-items:center;
   justify-content:center;
@@ -909,7 +952,7 @@ td{
 .modal-box{
   width:100%;
   max-width:520px;
-  background:#0F172A;
+  background:#0F172A !important;
   border-radius:28px;
   overflow:hidden;
   border:1px solid rgba(255,255,255,.08);
@@ -921,6 +964,7 @@ td{
   align-items:center;
   justify-content:space-between;
   border-bottom:1px solid rgba(255,255,255,.06);
+  background:#111827 !important;
 }
 
 .modal-header h3{
@@ -934,7 +978,7 @@ td{
   height:42px;
   border:none;
   border-radius:14px;
-  background:#111827;
+  background:#1E293B !important;
   color:white;
   cursor:pointer;
   font-size:22px;
@@ -942,6 +986,7 @@ td{
 
 .modal-content{
   padding:24px;
+  background:#0F172A !important;
 }
 
 .detail-item{
@@ -972,7 +1017,7 @@ td{
 
 .update-box{
   margin-top:24px;
-  background:#111827;
+  background:#111827 !important;
   border-radius:20px;
   padding:18px;
 }
@@ -982,15 +1027,20 @@ td{
   margin-bottom:16px;
 }
 
-.update-box select{
+.update-box select,
+.tracking-input{
   width:100%;
   height:52px;
   border:none;
   border-radius:14px;
-  background:#0B1020;
+  background:#0B1020 !important;
   color:white;
   padding:0 16px;
   margin-bottom:14px;
+}
+
+.tracking-input::placeholder{
+  color:#64748B;
 }
 
 .update-btn{
