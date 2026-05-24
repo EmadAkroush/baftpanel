@@ -205,11 +205,7 @@ const items = [
     icon: "mdi mdi-shape-outline"
   },
 
-  {
-    label: "تنظیمات",
-    to: "/settings",
-    icon: "mdi mdi-cog-outline"
-  }
+
 ];
 
 /* ===== Actions ===== */
