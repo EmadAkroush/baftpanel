@@ -37,16 +37,7 @@
     <div class="navbar-left">
 
       <!-- Search -->
-      <div class="search-box">
-
-        <i class="mdi mdi-magnify search-icon"></i>
-
-        <input
-          type="text"
-          placeholder="جستجو در پنل..."
-        />
-
-      </div>
+   
 
       <!-- Notification -->
       <button class="action-btn">
