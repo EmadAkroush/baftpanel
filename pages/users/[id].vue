@@ -49,7 +49,7 @@ const user = reactive({
   phone: "09121234567",
 
   wallet: "0x84f9dD8847ab4D",
-  vxCode: "VX-84521",
+  vxCode: "ne-84521",
 
   mainBalance: 18250,
   profitBalance: 5280,

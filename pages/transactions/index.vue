@@ -136,7 +136,7 @@
               </td>
 
               <!-- AMOUNT -->
-              <td class="amount">${{ format(tx.amount) }}</td>
+              <td class="amount"> {{ format(tx.amount) }}</td>
 
               <!-- STATUS -->
               <td>
