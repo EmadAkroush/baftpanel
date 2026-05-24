@@ -52,7 +52,7 @@
             <div class="meta-item">
               <span>قیمت:</span>
               <strong>
-                ${{ format(product.price) }}
+                {{ format(product.price) }}
               </strong>
             </div>
 

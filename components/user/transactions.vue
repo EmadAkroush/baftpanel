@@ -96,7 +96,7 @@
           :class="item.type"
         >
           {{ item.type === 'deposit' ? '+' : '-' }}
-          ${{ format(item.amount) }}
+          {{ format(item.amount) }}
         </div>
 
       </div>

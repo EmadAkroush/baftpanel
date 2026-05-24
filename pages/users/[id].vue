@@ -48,7 +48,7 @@ const user = reactive({
   email: "parsa@example.com",
   phone: "09121234567",
 
-  wallet: "0x84f9dD8847ab4D",
+  wallet: "565656565654654646",
   vxCode: "ne-84521",
 
   mainBalance: 18250,
