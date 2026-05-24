@@ -304,7 +304,7 @@
             </p>
 
             <strong>
-              ${{ format(form.price || 0) }}
+              {{ format(form.price || 0) }}
             </strong>
 
           </div>
