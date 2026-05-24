@@ -16,7 +16,7 @@
 
       <button
         class="back-btn"
-        @click="navigateTo('/admin/products')"
+        @click="navigateTo('/products')"
       >
         <i class="mdi mdi-arrow-right"></i>
 
@@ -304,7 +304,7 @@
             </p>
 
             <strong>
-              ${{ format(form.price || 0) }}
+              {{ format(form.price || 0) }}
             </strong>
 
           </div>

@@ -66,7 +66,7 @@
 
         <div>
           <span>مجموع فروش</span>
-          <strong>$128K</strong>
+          <strong>128K</strong>
         </div>
       </div>
     </div>
@@ -141,7 +141,7 @@
               </td>
 
               <!-- PRICE -->
-              <td class="price">${{ format(product.price) }}</td>
+              <td class="price">{{ format(product.price) }}</td>
 
               <!-- STOCK -->
               <td>

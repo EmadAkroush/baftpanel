@@ -58,7 +58,7 @@
 
         <div>
           <span>مجموع تراکنش‌ها</span>
-          <strong>${{ format(totalAmount) }}</strong>
+          <strong>{{ format(totalAmount) }}</strong>
         </div>
       </div>
     </div>
@@ -227,7 +227,7 @@
               <span>مبلغ</span>
 
               <strong class="green">
-                ${{ format(selectedTransaction.amount) }}
+                {{ format(selectedTransaction.amount) }}
               </strong>
             </div>
 
