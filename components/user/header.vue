@@ -70,7 +70,7 @@
         <span>کل درآمد</span>
 
         <strong>
-          ${{ format(user.totalIncome) }}
+          {{ format(user.totalIncome) }}
         </strong>
       </div>
 
@@ -78,12 +78,12 @@
         <span>مجموع برداشت</span>
 
         <strong>
-          ${{ format(user.withdrawalTotalBalance) }}
+          {{ format(user.withdrawalTotalBalance) }}
         </strong>
       </div>
 
       <div class="mini-stat">
-        <span>VX Code</span>
+        <span> کد شبکه  </span>
 
         <strong>
           {{ user.vxCode }}
