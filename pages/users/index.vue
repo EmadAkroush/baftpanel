@@ -89,7 +89,7 @@
                     <span>کیف پول:</span>
 
                     <strong>
-                      ${{ format(user.mainBalance) }}
+                      {{ format(user.mainBalance) }}
                     </strong>
                   </div>
 
@@ -97,7 +97,7 @@
                     <span>سود:</span>
 
                     <strong class="profit">
-                      ${{ format(user.profitBalance) }}
+                      {{ format(user.profitBalance) }}
                     </strong>
                   </div>
 
@@ -105,7 +105,7 @@
                     <span>رفرال:</span>
 
                     <strong class="referral">
-                      ${{ format(user.referralBalance) }}
+                      {{ format(user.referralBalance) }}
                     </strong>
                   </div>
 
