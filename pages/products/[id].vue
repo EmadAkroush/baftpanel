@@ -1,16 +1,16 @@
 <template>
-  <div class="create-product-page">
+  <div class="edit-product-page">
 
     <!-- ===== HEADER ===== -->
     <div class="page-header">
 
       <div>
         <h1 class="page-title">
-          ایجاد محصول جدید
+          ویرایش محصول
         </h1>
 
         <p class="page-subtitle">
-          ثبت محصول جدید برای فروشگاه بافت
+          ویرایش اطلاعات محصول فروشگاه بافت
         </p>
       </div>
 
@@ -42,7 +42,7 @@
             </h2>
 
             <p>
-              اطلاعات پایه محصول را وارد کنید
+              اطلاعات پایه محصول را ویرایش کنید
             </p>
           </div>
 
@@ -93,6 +93,58 @@
                 v-model="form.brand"
                 type="text"
                 placeholder="نام برند"
+              />
+            </div>
+
+            <!-- COLORS -->
+            <div class="form-group">
+              <label>
+                رنگ‌بندی
+              </label>
+
+              <input
+                v-model="form.colors"
+                type="text"
+                placeholder="مشکی، سفید، کرم"
+              />
+            </div>
+
+            <!-- SIZE -->
+            <div class="form-group">
+              <label>
+                سایزبندی
+              </label>
+
+              <input
+                v-model="form.sizes"
+                type="text"
+                placeholder="S, M, L, XL"
+              />
+            </div>
+
+            <!-- FABRIC -->
+            <div class="form-group">
+              <label>
+                نوع بافت
+              </label>
+
+              <input
+                v-model="form.texture"
+                type="text"
+                placeholder="بافت ریز"
+              />
+            </div>
+
+            <!-- MATERIAL -->
+            <div class="form-group">
+              <label>
+                جنس
+              </label>
+
+              <input
+                v-model="form.material"
+                type="text"
+                placeholder="لینن"
               />
             </div>
 
@@ -197,14 +249,47 @@
             <i class="mdi mdi-cloud-upload-outline"></i>
 
             <h3>
-              آپلود تصویر
+              آپلود تصاویر
             </h3>
 
             <p>
-              فایل را اینجا رها کنید یا کلیک کنید
+              امکان انتخاب چند تصویر وجود دارد
             </p>
 
-            <input type="file" />
+            <input
+              type="file"
+              multiple
+              accept="image/*"
+              @change="handleImages"
+            />
+
+          </div>
+
+          <!-- PREVIEW -->
+          <div
+            v-if="imagePreviews.length"
+            class="preview-grid"
+          >
+
+            <div
+              v-for="(img, index) in imagePreviews"
+              :key="index"
+              class="preview-item"
+            >
+
+              <img
+                :src="img"
+                alt="preview"
+              />
+
+              <button
+                class="remove-image"
+                @click="removeImage(index)"
+              >
+                <i class="mdi mdi-close"></i>
+              </button>
+
+            </div>
 
           </div>
 
@@ -292,7 +377,18 @@
           <div class="preview-card">
 
             <div class="preview-image">
-              <i class="mdi mdi-image-outline"></i>
+
+              <img
+                v-if="imagePreviews.length"
+                :src="imagePreviews[0]"
+                alt="preview"
+              />
+
+              <i
+                v-else
+                class="mdi mdi-image-outline"
+              ></i>
+
             </div>
 
             <h3>
@@ -316,11 +412,11 @@
 
           <button
             class="save-btn"
-            @click="createProduct"
+            @click="updateProduct"
           >
-            <i class="mdi mdi-content-save-outline"></i>
+            <i class="mdi mdi-content-save-edit-outline"></i>
 
-            ثبت محصول
+            ذخیره تغییرات
           </button>
 
           <button class="draft-btn">
@@ -337,29 +433,68 @@
 </template>
 
 <script setup>
-import { reactive } from "vue"
+import { reactive, ref } from "vue"
 
 /* ===== FORM ===== */
-const form = reactive({
-  title: "",
-  category: "",
-  brand: "",
-  description: "",
 
-  price: "",
-  discountPrice: "",
-  stock: "",
-  code: "",
+const form = reactive({
+  title: "کت لینن مردانه",
+  category: "مردانه",
+  brand: "BAFT",
+  description: "کت لینن بسیار شیک و مناسب استایل تابستانی",
+
+  colors: "مشکی، سفید",
+  sizes: "M, L, XL",
+  texture: "بافت ریز",
+  material: "لینن",
+
+  price: 4200000,
+  discountPrice: 3600000,
+  stock: 24,
+  code: "BFT-2201",
 
   active: true,
-  featured: false
+  featured: true
 })
 
+/* ===== IMAGES ===== */
+
+const imagePreviews = ref([
+  "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?q=80&w=1200&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=1200&auto=format&fit=crop"
+])
+
+function handleImages(event) {
+
+  const files = event.target.files
+
+  if (!files.length) return
+
+  Array.from(files).forEach(file => {
+
+    const reader = new FileReader()
+
+    reader.onload = (e) => {
+      imagePreviews.value.push(e.target.result)
+    }
+
+    reader.readAsDataURL(file)
+
+  })
+}
+
+function removeImage(index) {
+  imagePreviews.value.splice(index, 1)
+}
+
 /* ===== METHODS ===== */
-const createProduct = () => {
+
+const updateProduct = () => {
+
   console.log(form)
 
-  alert("محصول با موفقیت ثبت شد")
+  alert("محصول با موفقیت بروزرسانی شد")
+
 }
 
 const format = (val) => {
@@ -369,7 +504,7 @@ const format = (val) => {
 
 <style scoped>
 
-.create-product-page{
+.edit-product-page{
   min-height:100vh;
   padding:32px;
   background:#F8F5F2;
@@ -526,6 +661,42 @@ const format = (val) => {
   cursor:pointer;
 }
 
+/* ===== PREVIEW IMAGES ===== */
+
+.preview-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
+  gap:16px;
+  margin-top:24px;
+}
+
+.preview-item{
+  position:relative;
+  height:140px;
+  border-radius:20px;
+  overflow:hidden;
+  background:#F8F5F2;
+}
+
+.preview-item img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.remove-image{
+  position:absolute;
+  top:10px;
+  left:10px;
+  width:32px;
+  height:32px;
+  border:none;
+  border-radius:10px;
+  background:rgba(0,0,0,.6);
+  color:white;
+  cursor:pointer;
+}
+
 /* ===== SWITCH ===== */
 
 .switch-list{
@@ -606,6 +777,13 @@ const format = (val) => {
   display:flex;
   align-items:center;
   justify-content:center;
+  overflow:hidden;
+}
+
+.preview-image img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
 }
 
 .preview-image i{
@@ -675,7 +853,7 @@ const format = (val) => {
 
 @media(max-width:768px){
 
-  .create-product-page{
+  .edit-product-page{
     padding:16px;
   }
 
@@ -696,6 +874,9 @@ const format = (val) => {
     height:180px;
   }
 
-}
+  .preview-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
 
+}
 </style>
