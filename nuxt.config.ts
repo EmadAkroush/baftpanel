@@ -15,7 +15,7 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      title: "finalxcard",
+      title: "baft panel",
       htmlAttrs: {
         lang: "en",
         dir: "ltr",
