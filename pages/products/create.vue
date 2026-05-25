@@ -1,3 +1,4 @@
+```vue
 <template>
   <div class="create-product-page">
 
@@ -33,7 +34,7 @@
       <!-- ===== LEFT ===== -->
       <div class="main-form">
 
-        <!-- BASIC -->
+        <!-- ===== BASIC ===== -->
         <div class="form-card">
 
           <div class="card-header">
@@ -48,6 +49,7 @@
 
           <div class="form-grid">
 
+            <!-- TITLE -->
             <div class="form-group full">
               <label>
                 نام محصول
@@ -60,6 +62,7 @@
               />
             </div>
 
+            <!-- CATEGORY -->
             <div class="form-group">
               <label>
                 دسته‌بندی
@@ -84,6 +87,7 @@
               </select>
             </div>
 
+            <!-- BRAND -->
             <div class="form-group">
               <label>
                 برند
@@ -96,6 +100,93 @@
               />
             </div>
 
+            <!-- FABRIC TYPE -->
+            <div class="form-group">
+              <label>
+                نوع بافت
+              </label>
+
+              <input
+                v-model="form.fabricType"
+                type="text"
+                placeholder="مثال: بافت ریز"
+              />
+            </div>
+
+            <!-- MATERIAL -->
+            <div class="form-group">
+              <label>
+                جنس
+              </label>
+
+              <input
+                v-model="form.material"
+                type="text"
+                placeholder="مثال: نخ پنبه"
+              />
+            </div>
+
+            <!-- COLORS -->
+            <div class="form-group full">
+              <label>
+                رنگ‌بندی
+              </label>
+
+              <div class="tags-input">
+
+                <div
+                  v-for="(color, index) in form.colors"
+                  :key="index"
+                  class="tag-item"
+                >
+                  {{ color }}
+
+                  <button @click="removeColor(index)">
+                    <i class="mdi mdi-close"></i>
+                  </button>
+                </div>
+
+                <input
+                  v-model="colorInput"
+                  type="text"
+                  placeholder="مثال: مشکی"
+                  @keydown.enter.prevent="addColor"
+                />
+
+              </div>
+            </div>
+
+            <!-- SIZES -->
+            <div class="form-group full">
+              <label>
+                سایزبندی
+              </label>
+
+              <div class="tags-input">
+
+                <div
+                  v-for="(size, index) in form.sizes"
+                  :key="index"
+                  class="tag-item"
+                >
+                  {{ size }}
+
+                  <button @click="removeSize(index)">
+                    <i class="mdi mdi-close"></i>
+                  </button>
+                </div>
+
+                <input
+                  v-model="sizeInput"
+                  type="text"
+                  placeholder="مثال: XL"
+                  @keydown.enter.prevent="addSize"
+                />
+
+              </div>
+            </div>
+
+            <!-- DESCRIPTION -->
             <div class="form-group full">
               <label>
                 توضیحات محصول
@@ -112,7 +203,7 @@
 
         </div>
 
-        <!-- PRICE -->
+        <!-- ===== PRICE ===== -->
         <div class="form-card">
 
           <div class="card-header">
@@ -179,7 +270,7 @@
 
         </div>
 
-        <!-- IMAGES -->
+        <!-- ===== IMAGES ===== -->
         <div class="form-card">
 
           <div class="card-header">
@@ -188,7 +279,7 @@
             </h2>
 
             <p>
-              تصویر اصلی و گالری محصول
+              امکان آپلود چند تصویر برای محصول
             </p>
           </div>
 
@@ -197,14 +288,47 @@
             <i class="mdi mdi-cloud-upload-outline"></i>
 
             <h3>
-              آپلود تصویر
+              آپلود تصاویر محصول
             </h3>
 
             <p>
-              فایل را اینجا رها کنید یا کلیک کنید
+              فایل‌ها را اینجا رها کنید یا کلیک کنید
             </p>
 
-            <input type="file" />
+            <input
+              type="file"
+              multiple
+              accept="image/*"
+              @change="handleImagesUpload"
+            />
+
+          </div>
+
+          <!-- PREVIEW IMAGES -->
+          <div
+            v-if="previewImages.length"
+            class="preview-grid"
+          >
+
+            <div
+              v-for="(image, index) in previewImages"
+              :key="index"
+              class="preview-item"
+            >
+
+              <img
+                :src="image"
+                alt="preview"
+              />
+
+              <button
+                class="remove-image"
+                @click="removeImage(index)"
+              >
+                <i class="mdi mdi-close"></i>
+              </button>
+
+            </div>
 
           </div>
 
@@ -280,7 +404,7 @@
 
         </div>
 
-        <!-- PREVIEW -->
+        <!-- ===== PREVIEW ===== -->
         <div class="form-card">
 
           <div class="card-header">
@@ -292,7 +416,18 @@
           <div class="preview-card">
 
             <div class="preview-image">
-              <i class="mdi mdi-image-outline"></i>
+
+              <img
+                v-if="previewImages.length"
+                :src="previewImages[0]"
+                alt="preview"
+              />
+
+              <i
+                v-else
+                class="mdi mdi-image-outline"
+              ></i>
+
             </div>
 
             <h3>
@@ -311,7 +446,7 @@
 
         </div>
 
-        <!-- ACTIONS -->
+        <!-- ===== ACTIONS ===== -->
         <div class="action-buttons">
 
           <button
@@ -337,14 +472,21 @@
 </template>
 
 <script setup>
-import { reactive } from "vue"
+import { reactive, ref } from "vue"
 
 /* ===== FORM ===== */
+
 const form = reactive({
   title: "",
   category: "",
   brand: "",
   description: "",
+
+  fabricType: "",
+  material: "",
+
+  colors: [],
+  sizes: [],
 
   price: "",
   discountPrice: "",
@@ -352,15 +494,89 @@ const form = reactive({
   code: "",
 
   active: true,
-  featured: false
+  featured: false,
+
+  images: []
 })
 
-/* ===== METHODS ===== */
+/* ===== TAG INPUTS ===== */
+
+const colorInput = ref("")
+const sizeInput = ref("")
+
+/* ===== IMAGES ===== */
+
+const previewImages = ref([])
+
+/* ===== ADD COLOR ===== */
+
+const addColor = () => {
+
+  if (!colorInput.value.trim()) return
+
+  form.colors.push(colorInput.value)
+
+  colorInput.value = ""
+}
+
+const removeColor = (index) => {
+  form.colors.splice(index, 1)
+}
+
+/* ===== ADD SIZE ===== */
+
+const addSize = () => {
+
+  if (!sizeInput.value.trim()) return
+
+  form.sizes.push(sizeInput.value)
+
+  sizeInput.value = ""
+}
+
+const removeSize = (index) => {
+  form.sizes.splice(index, 1)
+}
+
+/* ===== IMAGE UPLOAD ===== */
+
+const handleImagesUpload = (event) => {
+
+  const files = Array.from(event.target.files)
+
+  files.forEach((file) => {
+
+    form.images.push(file)
+
+    const reader = new FileReader()
+
+    reader.onload = (e) => {
+      previewImages.value.push(e.target.result)
+    }
+
+    reader.readAsDataURL(file)
+
+  })
+
+}
+
+const removeImage = (index) => {
+
+  form.images.splice(index, 1)
+
+  previewImages.value.splice(index, 1)
+}
+
+/* ===== CREATE PRODUCT ===== */
+
 const createProduct = () => {
+
   console.log(form)
 
   alert("محصول با موفقیت ثبت شد")
 }
+
+/* ===== FORMAT ===== */
 
 const format = (val) => {
   return Number(val || 0).toLocaleString("fa-IR")
@@ -492,6 +708,49 @@ const format = (val) => {
   border-color:#C8A96B;
 }
 
+/* ===== TAGS ===== */
+
+.tags-input{
+  min-height:58px;
+  background:#F8F5F2;
+  border-radius:18px;
+  padding:12px;
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:10px;
+}
+
+.tags-input input{
+  border:none;
+  background:transparent;
+  flex:1;
+  min-width:120px;
+  color:#1F1F24;
+}
+
+.tags-input input:focus{
+  outline:none;
+}
+
+.tag-item{
+  background:linear-gradient(135deg,#5B2A4A,#C8A96B);
+  color:white;
+  padding:8px 12px;
+  border-radius:999px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:13px;
+}
+
+.tag-item button{
+  border:none;
+  background:transparent;
+  color:white;
+  cursor:pointer;
+}
+
 /* ===== UPLOAD ===== */
 
 .upload-box{
@@ -523,6 +782,42 @@ const format = (val) => {
   position:absolute;
   inset:0;
   opacity:0;
+  cursor:pointer;
+}
+
+/* ===== IMAGE PREVIEW ===== */
+
+.preview-grid{
+  margin-top:24px;
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+  gap:16px;
+}
+
+.preview-item{
+  position:relative;
+  border-radius:20px;
+  overflow:hidden;
+  height:160px;
+  background:#F8F5F2;
+}
+
+.preview-item img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.remove-image{
+  position:absolute;
+  top:10px;
+  left:10px;
+  width:34px;
+  height:34px;
+  border:none;
+  border-radius:12px;
+  background:rgba(0,0,0,.55);
+  color:white;
   cursor:pointer;
 }
 
@@ -606,6 +901,13 @@ const format = (val) => {
   display:flex;
   align-items:center;
   justify-content:center;
+  overflow:hidden;
+}
+
+.preview-image img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
 }
 
 .preview-image i{
@@ -699,3 +1001,4 @@ const format = (val) => {
 }
 
 </style>
+```
