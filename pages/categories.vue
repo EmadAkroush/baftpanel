@@ -287,47 +287,11 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 
 /* ===== DATA ===== */
 
-const categories = ref([
-  {
-    id: 1,
-    title: "مردانه",
-    slug: "men",
-    parent: null,
-    products: 120,
-    status: "active",
-    createdAt: "1404/04/01",
-    icon: "mdi mdi-tshirt-crew-outline",
-    description: "پوشاک و استایل مردانه",
-  },
-
-  {
-    id: 2,
-    title: "زنانه",
-    slug: "women",
-    parent: null,
-    products: 98,
-    status: "active",
-    createdAt: "1404/04/02",
-    icon: "mdi mdi-shopping-outline",
-    description: "مد و پوشاک زنانه",
-  },
-
-  {
-    id: 3,
-    title: "اکسسوری",
-    slug: "accessories",
-    parent: null,
-    products: 76,
-    status: "active",
-    createdAt: "1404/04/05",
-    icon: "mdi mdi-sunglasses",
-    description: "اکسسوری و لوازم جانبی",
-  },
-]);
+const categories = ref([]);
 
 /* ===== FILTERS ===== */
 
@@ -345,13 +309,43 @@ const showModal = ref(false);
 const isEdit = ref(false);
 
 const form = ref({
-  id: null,
+  _id: null,
   title: "",
   slug: "",
   parent: "",
   description: "",
   status: "active",
 });
+
+/* =========================
+   FETCH CATEGORIES
+========================= */
+
+async function fetchCategories() {
+  try {
+    const res = await $fetch("/api/categories");
+
+    categories.value = (res || []).map((item) => ({
+      ...item,
+
+      id: item._id,
+
+      products: item.products || 0,
+
+      icon: item.icon || "mdi mdi-shape-outline",
+
+      status: item.isActive ? "active" : "inactive",
+
+      createdAt: item.createdAt
+        ? new Date(item.createdAt).toLocaleDateString("fa-IR")
+        : "-",
+    }));
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+onMounted(fetchCategories);
 
 /* ===== FILTERED ===== */
 
@@ -360,8 +354,8 @@ const filteredCategories = computed(() => {
     const s = search.value.toLowerCase();
 
     return (
-      (item.title.toLowerCase().includes(s) ||
-        item.slug.toLowerCase().includes(s)) &&
+      (item.title?.toLowerCase().includes(s) ||
+        item.slug?.toLowerCase().includes(s)) &&
       (!statusFilter.value || item.status === statusFilter.value)
     );
   });
@@ -402,7 +396,7 @@ const parentCategories = computed(
 );
 
 const totalProducts = computed(() =>
-  categories.value.reduce((sum, item) => sum + item.products, 0),
+  categories.value.reduce((sum, item) => sum + (item.products || 0), 0),
 );
 
 /* ===== MODAL ===== */
@@ -411,7 +405,7 @@ function openCreateModal() {
   isEdit.value = false;
 
   form.value = {
-    id: null,
+    _id: null,
     title: "",
     slug: "",
     parent: "",
@@ -426,7 +420,12 @@ function openEditModal(category) {
   isEdit.value = true;
 
   form.value = {
-    ...category,
+    _id: category._id,
+    title: category.title,
+    slug: category.slug,
+    parent: category.parent || "",
+    description: category.description || "",
+    status: category.status,
   };
 
   showModal.value = true;
@@ -436,49 +435,67 @@ function closeModal() {
   showModal.value = false;
 }
 
-/* ===== SUBMIT ===== */
+/* =========================
+   CREATE / UPDATE
+========================= */
 
-function submitCategory() {
-  if (!form.value.title || !form.value.slug) {
-    return;
-  }
-
-  if (isEdit.value) {
-    const index = categories.value.findIndex(
-      (item) => item.id === form.value.id,
-    );
-
-    if (index !== -1) {
-      categories.value[index] = {
-        ...categories.value[index],
-        ...form.value,
-      };
+async function submitCategory() {
+  try {
+    if (!form.value.title || !form.value.slug) {
+      return;
     }
-  } else {
-    categories.value.unshift({
-      id: Date.now(),
-      title: form.value.title,
-      slug: form.value.slug,
-      parent: form.value.parent,
-      description: form.value.description,
-      status: form.value.status,
-      products: 0,
-      createdAt: "1404/04/20",
-      icon: "mdi mdi-shape-outline",
-    });
-  }
 
-  closeModal();
+    const payload = {
+      name: form.value.title,
+      slug: form.value.slug,
+      parentId: form.value.parent || null,
+      description: form.value.description,
+      active: form.value.status === "active",
+    };
+
+    if (isEdit.value) {
+      await $fetch(`/api/categories`, {
+        method: "PATCH",
+        query: { id: form.value._id },
+        body: payload,
+      });
+    } else {
+      await $fetch("/api/categories/create", {
+        method: "POST",
+        body: payload,
+      });
+    }
+
+    await fetchCategories();
+
+    closeModal();
+  } catch (err) {
+    console.error(err);
+    alert("خطا در ذخیره دسته‌بندی");
+  }
 }
 
-/* ===== DELETE ===== */
+/* =========================
+   DELETE
+========================= */
 
-function deleteCategory(id) {
+async function deleteCategory(id) {
   const confirmed = confirm("آیا از حذف این دسته‌بندی مطمئن هستید؟");
 
   if (!confirmed) return;
 
-  categories.value = categories.value.filter((item) => item.id !== id);
+  try {
+    await $fetch(`/api/categories`, {
+      query: { id },
+      method: "DELETE",
+    });
+
+    await fetchCategories();
+  } catch (err) {
+    console.error(err);
+
+    alert("خطا در حذف دسته‌بندی");
+  }
 }
 </script>
 
@@ -504,7 +521,6 @@ function deleteCategory(id) {
 .page-title {
   font-size: 34px;
   font-weight: 900;
-
 }
 
 .page-subtitle {
@@ -586,13 +602,11 @@ function deleteCategory(id) {
   display: block;
   margin-top: 8px;
   font-size: 28px;
-
 }
 
 /* ===== FILTERS ===== */
 
 .filters-card {
-
   border-radius: 28px;
   padding: 20px;
   display: flex;
@@ -605,7 +619,6 @@ function deleteCategory(id) {
   flex: 1;
   min-width: 260px;
   position: relative;
-  
 }
 
 .search-box i {
@@ -622,7 +635,6 @@ function deleteCategory(id) {
   height: 54px;
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.08);
-
 
   padding: 0 16px;
 }
@@ -645,7 +657,6 @@ textarea:focus {
 /* ===== TABLE ===== */
 
 .table-card {
-
   border-radius: 30px;
   overflow: hidden;
 }
@@ -661,7 +672,6 @@ table {
   color: #0f172a;
 }
 
-
 thead {
   background: #111827;
 }
@@ -675,7 +685,6 @@ th {
 td {
   padding: 20px;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
-
 }
 
 /* ===== CATEGORY ===== */
