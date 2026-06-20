@@ -1,41 +1,25 @@
 <template>
   <div class="users-page">
-
     <!-- ===== Header ===== -->
     <div class="page-header">
-
       <div>
-        <h1 class="page-title">
-          مدیریت کاربران
-        </h1>
+        <h1 class="page-title">مدیریت کاربران</h1>
 
-        <p class="page-subtitle">
-          مشاهده و مدیریت کامل کاربران فروشگاه بافت
-        </p>
+        <p class="page-subtitle">مشاهده و مدیریت کامل کاربران فروشگاه بافت</p>
       </div>
 
       <!-- Search -->
       <div class="search-box">
-
         <i class="mdi mdi-magnify"></i>
 
-        <input
-          v-model="search"
-          type="text"
-          placeholder="جستجو کاربران..."
-        />
-
+        <input v-model="search" type="text" placeholder="جستجو کاربران..." />
       </div>
-
     </div>
 
     <!-- ===== Table Card ===== -->
     <div class="table-card">
-
       <div class="table-responsive">
-
         <table class="users-table">
-
           <!-- Head -->
           <thead>
             <tr>
@@ -49,42 +33,58 @@
 
           <!-- Body -->
           <tbody>
+            <tr v-if="loading">
+              <td colspan="5">
+                <div style="padding: 30px; text-align: center">
+                  در حال دریافت اطلاعات...
+                </div>
+              </td>
+            </tr>
 
-            <tr
-              v-for="user in filteredUsers"
-              :key="user._id"
-            >
+            <tr v-else-if="error">
+              <td colspan="5">
+                <div style="padding: 30px; text-align: center; color: red">
+                  {{ error }}
+                </div>
+              </td>
+            </tr>
 
+            <tr v-else-if="!filteredUsers.length">
+              <td colspan="5">
+                <div style="padding: 30px; text-align: center">
+                  هیچ کاربری یافت نشد
+                </div>
+              </td>
+            </tr>
+
+            <tr v-for="user in filteredUsers" :key="user._id">
               <!-- User -->
               <td>
-
                 <div class="user-box">
-
                   <div class="avatar">
-                    {{ user.username?.charAt(0) }}
+                    {{
+                      user.firstName?.charAt(0) || user.phone?.charAt(0) || "U"
+                    }}
                   </div>
 
                   <div class="user-info">
-
                     <h4>
-                      {{ user.username }}
+                      {{
+                        `${user.firstName || ""}
+              ${user.lastName || ""}`
+                      }}
                     </h4>
 
                     <p>
-                      {{ user.email }}
+                      {{ user.phone }}
                     </p>
-
                   </div>
-
                 </div>
-
               </td>
 
               <!-- Balances -->
               <td>
-
                 <div class="balances-box">
-
                   <div class="balance-item">
                     <span>کیف پول:</span>
 
@@ -94,10 +94,10 @@
                   </div>
 
                   <div class="balance-item">
-                    <span>سود:</span>
+                    <span>درآمد کل:</span>
 
                     <strong class="profit">
-                      {{ format(user.profitBalance) }}
+                      {{ format(user.totalIncome) }}
                     </strong>
                   </div>
 
@@ -108,45 +108,27 @@
                       {{ format(user.referralBalance) }}
                     </strong>
                   </div>
-
                 </div>
-
               </td>
 
               <!-- Status -->
               <td>
-
                 <div
                   class="status-badge"
-                  :class="
-                    user.isActive
-                      ? 'active'
-                      : 'inactive'
-                  "
+                  :class="user.isActive ? 'active' : 'inactive'"
                 >
                   <span></span>
 
-                  {{
-                    user.isActive
-                      ? 'فعال'
-                      : 'غیرفعال'
-                  }}
+                  {{ user.isActive ? "فعال" : "غیرفعال" }}
                 </div>
-
               </td>
 
               <!-- Verify -->
               <td>
-
                 <div
                   class="verify-badge"
-                  :class="
-                    user.isVerified
-                      ? 'verified'
-                      : 'not-verified'
-                  "
+                  :class="user.isVerified ? 'verified' : 'not-verified'"
                 >
-
                   <i
                     :class="
                       user.isVerified
@@ -156,144 +138,97 @@
                   ></i>
 
                   <span>
-                    {{
-                      user.isVerified
-                        ? 'تایید شده'
-                        : 'تایید نشده'
-                    }}
+                    {{ user.isVerified ? "تایید شده" : "تایید نشده" }}
                   </span>
-
                 </div>
-
               </td>
 
               <!-- Action -->
               <td>
-
-                <button
-                  class="details-btn"
-                  @click="goToDetails(user._id)"
-                >
-
-                  <span>
-                    مشاهده
-                  </span>
+                <button class="details-btn" @click="goToDetails(user._id)">
+                  <span> مشاهده </span>
 
                   <i class="mdi mdi-arrow-left"></i>
-
                 </button>
-
               </td>
-
             </tr>
-
           </tbody>
-
         </table>
-
       </div>
-
     </div>
-
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 
 /* ===== Search ===== */
 const search = ref("");
 
-/* ===== Fake Users ===== */
-const users = ref([
-  {
-    _id: 1,
-    username: "نگار محمدی",
-    email: "negar@gmail.com",
-    mainBalance: 2850,
-    profitBalance: 430,
-    referralBalance: 180,
-    isActive: true,
-    isVerified: true
-  },
+/* ===== State ===== */
+const users = ref([]);
 
-  {
-    _id: 2,
-    username: "پارسا احمدی",
-    email: "parsa@gmail.com",
-    mainBalance: 1240,
-    profitBalance: 220,
-    referralBalance: 90,
-    isActive: true,
-    isVerified: false
-  },
+const loading = ref(false);
 
-  {
-    _id: 3,
-    username: "ترانه عزیزی",
-    email: "tarane@gmail.com",
-    mainBalance: 7420,
-    profitBalance: 980,
-    referralBalance: 520,
-    isActive: false,
-    isVerified: true
-  },
+const error = ref("");
 
-  {
-    _id: 4,
-    username: "آراد کریمی",
-    email: "arad@gmail.com",
-    mainBalance: 3250,
-    profitBalance: 640,
-    referralBalance: 310,
-    isActive: true,
-    isVerified: true
-  },
+/* ===== Get Users ===== */
+async function fetchUsers() {
+  try {
+    loading.value = true;
 
-  {
-    _id: 5,
-    username: "مهسا رضایی",
-    email: "mahsa@gmail.com",
-    mainBalance: 910,
-    profitBalance: 140,
-    referralBalance: 55,
-    isActive: false,
-    isVerified: false
+    const response = await $fetch("/api/users");
+
+    users.value = response || [];
+  } catch (err) {
+    console.error(err);
+
+    error.value = "خطا در دریافت کاربران";
+  } finally {
+    loading.value = false;
   }
-]);
+}
+
+/* ===== Mounted ===== */
+onMounted(() => {
+  fetchUsers();
+});
 
 /* ===== Filter ===== */
 const filteredUsers = computed(() => {
+  if (!search.value) return users.value;
 
-  if (!search.value)
-    return users.value;
+  return users.value.filter((user) => {
+    const keyword = search.value.toLowerCase();
 
-  return users.value.filter((u) =>
-    `${u.username} ${u.email}`
+    return `
+      ${user.firstName || ""}
+      ${user.lastName || ""}
+      ${user.username || ""}
+      ${user.phone || ""}
+      ${user.email || ""}
+    `
       .toLowerCase()
-      .includes(search.value.toLowerCase())
-  );
-
+      .includes(keyword);
+  });
 });
 
 /* ===== Navigate ===== */
 function goToDetails(id) {
-  navigateTo(`/users/${id}`);
+  navigateTo(`/super-admin/users/${id}`);
 }
 
 /* ===== Format ===== */
-const format = (val) =>
-  Number(val || 0).toLocaleString("fa-IR");
+const format = (val) => Number(val || 0).toLocaleString("fa-IR");
 </script>
 
 <style scoped>
-
 /* ===== Page ===== */
 
 .users-page {
   min-height: 100vh;
   padding: 32px;
-  background: #F8F5F2;
+  background: #f8f5f2;
   direction: rtl;
 }
 
@@ -311,12 +246,12 @@ const format = (val) =>
 .page-title {
   font-size: 34px;
   font-weight: 800;
-  color: #1F1F24;
+  color: #1f1f24;
 }
 
 .page-subtitle {
   margin-top: 8px;
-  color: #5B2A4A;
+  color: #5b2a4a;
   font-size: 15px;
 }
 
@@ -330,26 +265,25 @@ const format = (val) =>
 
   border-radius: 20px;
 
-  border: 1px solid rgba(217,165,179,.22);
+  border: 1px solid rgba(217, 165, 179, 0.22);
 
   display: flex;
   align-items: center;
 
   padding: 0 18px;
 
-  transition: .25s ease;
+  transition: 0.25s ease;
 }
 
 .search-box:focus-within {
-  border-color: #C8A96B;
+  border-color: #c8a96b;
 
-  box-shadow:
-    0 0 0 4px rgba(200,169,107,.10);
+  box-shadow: 0 0 0 4px rgba(200, 169, 107, 0.1);
 }
 
 .search-box i {
   font-size: 22px;
-  color: #5B2A4A;
+  color: #5b2a4a;
   margin-left: 12px;
 }
 
@@ -360,11 +294,11 @@ const format = (val) =>
   background: transparent;
 
   font-size: 14px;
-  color: #1F1F24;
+  color: #1f1f24;
 }
 
 .search-box input::placeholder {
-  color: #9F7788;
+  color: #9f7788;
 }
 
 .search-box input:focus {
@@ -377,10 +311,9 @@ const format = (val) =>
   background: white;
   border-radius: 30px;
 
-  border: 1px solid rgba(217,165,179,.18);
+  border: 1px solid rgba(217, 165, 179, 0.18);
 
-  box-shadow:
-    0 10px 30px rgba(91,42,74,.05);
+  box-shadow: 0 10px 30px rgba(91, 42, 74, 0.05);
 
   overflow: hidden;
 }
@@ -399,19 +332,18 @@ const format = (val) =>
 }
 
 .users-table thead {
-  background:
-    linear-gradient(
-      135deg,
-      rgba(91,42,74,.04),
-      rgba(200,169,107,.06)
-    );
+  background: linear-gradient(
+    135deg,
+    rgba(91, 42, 74, 0.04),
+    rgba(200, 169, 107, 0.06)
+  );
 }
 
 .users-table th {
   text-align: right;
   padding: 22px 24px;
 
-  color: #5B2A4A;
+  color: #5b2a4a;
   font-size: 14px;
   font-weight: 800;
 
@@ -421,18 +353,17 @@ const format = (val) =>
 .users-table td {
   padding: 22px 24px;
 
-  border-top:
-    1px solid rgba(217,165,179,.12);
+  border-top: 1px solid rgba(217, 165, 179, 0.12);
 
   vertical-align: middle;
 }
 
 .users-table tbody tr {
-  transition: .25s ease;
+  transition: 0.25s ease;
 }
 
 .users-table tbody tr:hover {
-  background: rgba(217,165,179,.06);
+  background: rgba(217, 165, 179, 0.06);
 }
 
 /* ===== User ===== */
@@ -449,12 +380,7 @@ const format = (val) =>
 
   border-radius: 18px;
 
-  background:
-    linear-gradient(
-      135deg,
-      #5B2A4A,
-      #C8A96B
-    );
+  background: linear-gradient(135deg, #5b2a4a, #c8a96b);
 
   display: flex;
   align-items: center;
@@ -471,12 +397,12 @@ const format = (val) =>
 .user-info h4 {
   font-size: 15px;
   font-weight: 800;
-  color: #1F1F24;
+  color: #1f1f24;
 }
 
 .user-info p {
   margin-top: 6px;
-  color: #8B5E74;
+  color: #8b5e74;
   font-size: 13px;
 }
 
@@ -497,19 +423,19 @@ const format = (val) =>
 }
 
 .balance-item span {
-  color: #5B2A4A;
+  color: #5b2a4a;
 }
 
 .balance-item strong {
-  color: #1F1F24;
+  color: #1f1f24;
 }
 
 .balance-item .profit {
-  color: #16A34A;
+  color: #16a34a;
 }
 
 .balance-item .referral {
-  color: #C8A96B;
+  color: #c8a96b;
 }
 
 /* ===== Status ===== */
@@ -535,21 +461,21 @@ const format = (val) =>
 }
 
 .status-badge.active {
-  background: rgba(34,197,94,.12);
-  color: #16A34A;
+  background: rgba(34, 197, 94, 0.12);
+  color: #16a34a;
 }
 
 .status-badge.active span {
-  background: #16A34A;
+  background: #16a34a;
 }
 
 .status-badge.inactive {
-  background: rgba(239,68,68,.12);
-  color: #DC2626;
+  background: rgba(239, 68, 68, 0.12);
+  color: #dc2626;
 }
 
 .status-badge.inactive span {
-  background: #DC2626;
+  background: #dc2626;
 }
 
 /* ===== Verify ===== */
@@ -568,11 +494,11 @@ const format = (val) =>
 }
 
 .verified {
-  color: #16A34A;
+  color: #16a34a;
 }
 
 .not-verified {
-  color: #9CA3AF;
+  color: #9ca3af;
 }
 
 /* ===== Button ===== */
@@ -584,12 +510,7 @@ const format = (val) =>
   border: none;
   border-radius: 16px;
 
-  background:
-    linear-gradient(
-      135deg,
-      #5B2A4A,
-      #C8A96B
-    );
+  background: linear-gradient(135deg, #5b2a4a, #c8a96b);
 
   color: white;
 
@@ -600,20 +521,18 @@ const format = (val) =>
   font-weight: 700;
   cursor: pointer;
 
-  transition: .25s ease;
+  transition: 0.25s ease;
 }
 
 .details-btn:hover {
   transform: translateY(-2px);
 
-  box-shadow:
-    0 12px 24px rgba(91,42,74,.16);
+  box-shadow: 0 12px 24px rgba(91, 42, 74, 0.16);
 }
 
 /* ===== Responsive ===== */
 
 @media (max-width: 992px) {
-
   .users-page {
     padding: 18px;
   }
@@ -625,11 +544,9 @@ const format = (val) =>
   .search-box {
     width: 100%;
   }
-
 }
 
 @media (max-width: 768px) {
-
   .page-header {
     flex-direction: column;
     align-items: stretch;
@@ -643,7 +560,5 @@ const format = (val) =>
   .users-table td {
     padding: 18px;
   }
-
 }
-
 </style>
