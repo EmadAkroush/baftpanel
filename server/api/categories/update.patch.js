@@ -4,10 +4,10 @@ export default defineEventHandler(async (event) => {
     // const token = getCookie(event, 'token');
     const query = getQuery(event);
 
-    console.log("ffff" , query);
+    console.log("ffff" );
     
     try {
-        const data = await $fetch(`${apiBase}/packages/${query.id}`, {
+        const data = await $fetch(`${apiBase}/categories/${query.id}`, {
             method: 'Patch',
             body: body,
             headers: {

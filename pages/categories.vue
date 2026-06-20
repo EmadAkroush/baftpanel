@@ -109,7 +109,7 @@
 
                   <div>
                     <h4>
-                      {{ category.title }}
+                      {{ category.name }}
                     </h4>
 
                     <p>
@@ -221,7 +221,7 @@
               <label>عنوان دسته‌بندی</label>
 
               <input
-                v-model="form.title"
+                v-model="form.name"
                 type="text"
                 placeholder="مثلا مردانه"
               />
@@ -255,9 +255,9 @@
                 <option
                   v-for="item in categories"
                   :key="item.id"
-                  :value="item.title"
+                  :value="item.name"
                 >
-                  {{ item.title }}
+                  {{ item.name }}
                 </option>
               </select>
             </div>
@@ -310,7 +310,7 @@ const isEdit = ref(false);
 
 const form = ref({
   _id: null,
-  title: "",
+  name: "",
   slug: "",
   parent: "",
   description: "",
@@ -354,7 +354,7 @@ const filteredCategories = computed(() => {
     const s = search.value.toLowerCase();
 
     return (
-      (item.title?.toLowerCase().includes(s) ||
+      (item.name?.toLowerCase().includes(s) ||
         item.slug?.toLowerCase().includes(s)) &&
       (!statusFilter.value || item.status === statusFilter.value)
     );
@@ -406,7 +406,7 @@ function openCreateModal() {
 
   form.value = {
     _id: null,
-    title: "",
+    name: "",
     slug: "",
     parent: "",
     description: "",
@@ -421,7 +421,7 @@ function openEditModal(category) {
 
   form.value = {
     _id: category._id,
-    title: category.title,
+    name: category.name,
     slug: category.slug,
     parent: category.parent || "",
     description: category.description || "",
@@ -439,42 +439,74 @@ function closeModal() {
    CREATE / UPDATE
 ========================= */
 
+/* =========================
+   CREATE CATEGORY
+========================= */
+
+async function createCategory() {
+  const payload = {
+    name: form.value.name,
+    slug: form.value.slug,
+    parentId: form.value.parent || null,
+    description: form.value.description,
+    active: form.value.status === "active",
+  };
+
+  await $fetch("/api/categories/create", {
+    method: "POST",
+    body: payload,
+  });
+}
+
+/* =========================
+   UPDATE CATEGORY
+========================= */
+
+async function updateCategory() {
+  const payload = {
+    name: form.value.name,
+    slug: form.value.slug,
+    parentId: form.value.parent || null,
+    description: form.value.description,
+    active: form.value.status === "active",
+  };
+
+  console.log("UPDATE ID =>", form.value._id);
+
+  await $fetch("/api/categories/update", {
+    method: "PATCH",
+    query: {
+      id: form.value._id,
+    },
+    body: payload,
+  });
+}
+
+/* =========================
+   SUBMIT
+========================= */
+
 async function submitCategory() {
   try {
-    if (!form.value.title || !form.value.slug) {
+    if (!form.value.name || !form.value.slug) {
       return;
     }
 
-    const payload = {
-      name: form.value.title,
-      slug: form.value.slug,
-      parentId: form.value.parent || null,
-      description: form.value.description,
-      active: form.value.status === "active",
-    };
-
     if (isEdit.value) {
-      await $fetch(`/api/categories`, {
-        method: "PATCH",
-        query: { id: form.value._id },
-        body: payload,
-      });
+      await updateCategory();
     } else {
-      await $fetch("/api/categories/create", {
-        method: "POST",
-        body: payload,
-      });
+      await createCategory();
     }
 
     await fetchCategories();
 
     closeModal();
   } catch (err) {
-    console.error(err);
+    console.error("CATEGORY ERROR =>", err);
+
     alert("خطا در ذخیره دسته‌بندی");
   }
 }
-
 /* =========================
    DELETE
 ========================= */
