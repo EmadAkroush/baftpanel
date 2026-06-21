@@ -11,10 +11,7 @@
       </div>
 
       <div class="header-actions">
-        <button class="export-btn">
-          <i class="mdi mdi-export-variant"></i>
-          خروجی اکسل
-        </button>
+        
         <NuxtLink to="/products/create">
           <button class="add-btn">
             <i class="mdi mdi-plus"></i>
