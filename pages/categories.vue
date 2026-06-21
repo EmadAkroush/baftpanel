@@ -126,8 +126,8 @@
 
               <!-- PARENT -->
               <td>
-                <span class="parent-badge" :class="{ empty: !category.parent }">
-                  {{ category.parent ? category.parent : "ندارد" }}
+                <span class="parent-badge" :class="{ empty: !category.parentId }">
+                  {{ category.parentId ? category.parentId : "ندارد" }}
                 </span>
               </td>
 
@@ -141,7 +141,7 @@
               <!-- STATUS -->
               <td>
                 <span class="status-badge" :class="category.status">
-                  {{ category.status === "active" ? "فعال" : "غیرفعال" }}
+                  {{ category.active === "active" ? "فعال" : "غیرفعال" }}
                 </span>
               </td>
 
@@ -249,7 +249,7 @@
             <div class="form-group">
               <label>دسته والد</label>
 
-              <select v-model="form.parent">
+              <select v-model="form.parentId">
                 <option value="">بدون والد</option>
 
                 <option
@@ -265,8 +265,7 @@
             <!-- STATUS -->
             <div class="form-group">
               <label>وضعیت</label>
-
-              <select v-model="form.status">
+              <select v-model="form.active">
                 <option value="active">فعال</option>
 
                 <option value="inactive">غیرفعال</option>
@@ -312,9 +311,9 @@ const form = ref({
   _id: null,
   name: "",
   slug: "",
-  parent: "",
+  parentId: "",
   description: "",
-  status: "active",
+  active: true,
 });
 
 /* =========================
@@ -334,7 +333,7 @@ async function fetchCategories() {
 
       icon: item.icon || "mdi mdi-shape-outline",
 
-      status: item.isActive ? "active" : "inactive",
+      active: item.active ? "active" : "inactive",
 
       createdAt: item.createdAt
         ? new Date(item.createdAt).toLocaleDateString("fa-IR")
@@ -356,7 +355,7 @@ const filteredCategories = computed(() => {
     return (
       (item.name?.toLowerCase().includes(s) ||
         item.slug?.toLowerCase().includes(s)) &&
-      (!statusFilter.value || item.status === statusFilter.value)
+      (!statusFilter.value || item.active === statusFilter.value)
     );
   });
 });
@@ -388,11 +387,11 @@ const nextPage = () => {
 /* ===== STATS ===== */
 
 const activeCategories = computed(
-  () => categories.value.filter((item) => item.status === "active").length,
+  () => categories.value.filter((item) => item.active === "active").length,
 );
 
 const parentCategories = computed(
-  () => categories.value.filter((item) => !item.parent).length,
+  () => categories.value.filter((item) => !item.parentId).length,
 );
 
 const totalProducts = computed(() =>
@@ -408,9 +407,9 @@ function openCreateModal() {
     _id: null,
     name: "",
     slug: "",
-    parent: "",
+    parentId: "",
     description: "",
-    status: "active",
+    active: true,
   };
 
   showModal.value = true;
@@ -423,9 +422,9 @@ function openEditModal(category) {
     _id: category._id,
     name: category.name,
     slug: category.slug,
-    parent: category.parent || "",
+    parentId: category.parentId || "",
     description: category.description || "",
-    status: category.status,
+    active: category.active,
   };
 
   showModal.value = true;
@@ -447,9 +446,9 @@ async function createCategory() {
   const payload = {
     name: form.value.name,
     slug: form.value.slug,
-    parentId: form.value.parent || null,
+    parentId: form.value.parentId || null,
     description: form.value.description,
-    active: form.value.status === "active",
+    active: form.value.active === "active",
   };
 
   await $fetch("/api/categories/create", {
@@ -466,9 +465,9 @@ async function updateCategory() {
   const payload = {
     name: form.value.name,
     slug: form.value.slug,
-    parentId: form.value.parent || null,
+    parentId: form.value.parentId || null,
     description: form.value.description,
-    active: form.value.status === "active",
+    active: form.value.active === "active",
   };
 
   console.log("UPDATE ID =>", form.value._id);
