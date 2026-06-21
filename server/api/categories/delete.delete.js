@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
     try {
        
    
-        const data = await $fetch(`${apiBase}/packages/${query.id}`, {
+        const data = await $fetch(`${apiBase}/categories/${query.id}`, {
             method: 'DELETE',
             headers: {
                 'Accept': 'Multipart/Form-Data',

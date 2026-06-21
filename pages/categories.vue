@@ -516,7 +516,7 @@ async function deleteCategory(id) {
   if (!confirmed) return;
 
   try {
-    await $fetch(`/api/categories`, {
+    await $fetch(`/api/categories/delete`, {
       query: { id },
       method: "DELETE",
     });
