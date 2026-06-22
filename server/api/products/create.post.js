@@ -11,7 +11,7 @@ export default defineEventHandler(async (event) => {
       statusMessage: 'Unauthorized - Token missing',
     })
   }
-
+ console.log("jjjjj5555555");
   try {
     // 🟢 ارسال درخواست به بک‌اند finalxcard با توکن
     const data = await $fetch(`${apiBase}/products`, {

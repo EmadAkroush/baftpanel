@@ -1,59 +1,36 @@
-```vue
 <template>
   <div class="create-product-page">
-
     <!-- ===== HEADER ===== -->
     <div class="page-header">
-
       <div>
-        <h1 class="page-title">
-          ایجاد محصول جدید
-        </h1>
+        <h1 class="page-title">ایجاد محصول جدید</h1>
 
-        <p class="page-subtitle">
-          ثبت محصول جدید برای فروشگاه بافت
-        </p>
+        <p class="page-subtitle">ثبت محصول جدید برای فروشگاه بافت</p>
       </div>
 
-      <button
-        class="back-btn"
-        @click="navigateTo('/products')"
-      >
+      <button class="back-btn" @click="navigateTo('/products')">
         <i class="mdi mdi-arrow-right"></i>
 
-        <span>
-          بازگشت
-        </span>
+        <span> بازگشت </span>
       </button>
-
     </div>
 
     <!-- ===== FORM ===== -->
     <div class="form-layout">
-
       <!-- ===== LEFT ===== -->
       <div class="main-form">
-
         <!-- ===== BASIC ===== -->
         <div class="form-card">
-
           <div class="card-header">
-            <h2>
-              اطلاعات اصلی
-            </h2>
+            <h2>اطلاعات اصلی</h2>
 
-            <p>
-              اطلاعات پایه محصول را وارد کنید
-            </p>
+            <p>اطلاعات پایه محصول را وارد کنید</p>
           </div>
 
           <div class="form-grid">
-
             <!-- TITLE -->
             <div class="form-group full">
-              <label>
-                نام محصول
-              </label>
+              <label> نام محصول </label>
 
               <input
                 v-model="form.title"
@@ -64,47 +41,31 @@
 
             <!-- CATEGORY -->
             <div class="form-group">
-              <label>
-                دسته‌بندی
-              </label>
+              <label> دسته‌بندی </label>
 
-              <select v-model="form.category">
-                <option value="">
-                  انتخاب دسته‌بندی
-                </option>
+              <select v-model="form.categoryId">
+                <option value="">انتخاب دسته‌بندی</option>
 
-                <option value="مردانه">
-                  مردانه
-                </option>
-
-                <option value="زنانه">
-                  زنانه
-                </option>
-
-                <option value="اکسسوری">
-                  اکسسوری
+                <option
+                  v-for="category in categories"
+                  :key="category._id"
+                  :value="category._id"
+                >
+                  {{ category.name }}
                 </option>
               </select>
             </div>
 
             <!-- BRAND -->
             <div class="form-group">
-              <label>
-                برند
-              </label>
+              <label> برند </label>
 
-              <input
-                v-model="form.brand"
-                type="text"
-                placeholder="نام برند"
-              />
+              <input v-model="form.brand" type="text" placeholder="نام برند" />
             </div>
 
             <!-- FABRIC TYPE -->
             <div class="form-group">
-              <label>
-                نوع بافت
-              </label>
+              <label> نوع بافت </label>
 
               <input
                 v-model="form.fabricType"
@@ -115,9 +76,7 @@
 
             <!-- MATERIAL -->
             <div class="form-group">
-              <label>
-                جنس
-              </label>
+              <label> جنس </label>
 
               <input
                 v-model="form.material"
@@ -128,12 +87,9 @@
 
             <!-- COLORS -->
             <div class="form-group full">
-              <label>
-                رنگ‌بندی
-              </label>
+              <label> رنگ‌بندی </label>
 
               <div class="tags-input">
-
                 <div
                   v-for="(color, index) in form.colors"
                   :key="index"
@@ -152,18 +108,14 @@
                   placeholder="مثال: مشکی"
                   @keydown.enter.prevent="addColor"
                 />
-
               </div>
             </div>
 
             <!-- SIZES -->
             <div class="form-group full">
-              <label>
-                سایزبندی
-              </label>
+              <label> سایزبندی </label>
 
               <div class="tags-input">
-
                 <div
                   v-for="(size, index) in form.sizes"
                   :key="index"
@@ -182,15 +134,12 @@
                   placeholder="مثال: XL"
                   @keydown.enter.prevent="addSize"
                 />
-
               </div>
             </div>
 
             <!-- DESCRIPTION -->
             <div class="form-group full">
-              <label>
-                توضیحات محصول
-              </label>
+              <label> توضیحات محصول </label>
 
               <textarea
                 v-model="form.description"
@@ -198,42 +147,26 @@
                 placeholder="توضیحات کامل محصول..."
               ></textarea>
             </div>
-
           </div>
-
         </div>
 
         <!-- ===== PRICE ===== -->
         <div class="form-card">
-
           <div class="card-header">
-            <h2>
-              قیمت و موجودی
-            </h2>
+            <h2>قیمت و موجودی</h2>
 
-            <p>
-              اطلاعات مالی محصول
-            </p>
+            <p>اطلاعات مالی محصول</p>
           </div>
 
           <div class="form-grid">
-
             <div class="form-group">
-              <label>
-                قیمت اصلی
-              </label>
+              <label> قیمت اصلی </label>
 
-              <input
-                v-model="form.price"
-                type="number"
-                placeholder="0"
-              />
+              <input v-model="form.price" type="number" placeholder="0" />
             </div>
 
             <div class="form-group">
-              <label>
-                قیمت تخفیف
-              </label>
+              <label> قیمت تخفیف </label>
 
               <input
                 v-model="form.discountPrice"
@@ -243,57 +176,33 @@
             </div>
 
             <div class="form-group">
-              <label>
-                تعداد موجودی
-              </label>
+              <label> تعداد موجودی </label>
 
-              <input
-                v-model="form.stock"
-                type="number"
-                placeholder="0"
-              />
+              <input v-model="form.stock" type="number" placeholder="0" />
             </div>
 
             <div class="form-group">
-              <label>
-                کد محصول
-              </label>
+              <label> کد محصول </label>
 
-              <input
-                v-model="form.code"
-                type="text"
-                placeholder="BFT-2201"
-              />
+              <input v-model="form.code" type="text" placeholder="BFT-2201" />
             </div>
-
           </div>
-
         </div>
 
         <!-- ===== IMAGES ===== -->
         <div class="form-card">
-
           <div class="card-header">
-            <h2>
-              تصاویر محصول
-            </h2>
+            <h2>تصاویر محصول</h2>
 
-            <p>
-              امکان آپلود چند تصویر برای محصول
-            </p>
+            <p>امکان آپلود چند تصویر برای محصول</p>
           </div>
 
           <div class="upload-box">
-
             <i class="mdi mdi-cloud-upload-outline"></i>
 
-            <h3>
-              آپلود تصاویر محصول
-            </h3>
+            <h3>آپلود تصاویر محصول</h3>
 
-            <p>
-              فایل‌ها را اینجا رها کنید یا کلیک کنید
-            </p>
+            <p>فایل‌ها را اینجا رها کنید یا کلیک کنید</p>
 
             <input
               type="file"
@@ -301,184 +210,123 @@
               accept="image/*"
               @change="handleImagesUpload"
             />
-
           </div>
 
           <!-- PREVIEW IMAGES -->
-          <div
-            v-if="previewImages.length"
-            class="preview-grid"
-          >
-
+          <div v-if="previewImages.length" class="preview-grid">
             <div
               v-for="(image, index) in previewImages"
               :key="index"
               class="preview-item"
             >
+              <img :src="image" alt="preview" />
 
-              <img
-                :src="image"
-                alt="preview"
-              />
-
-              <button
-                class="remove-image"
-                @click="removeImage(index)"
-              >
+              <button class="remove-image" @click="removeImage(index)">
                 <i class="mdi mdi-close"></i>
               </button>
-
             </div>
-
           </div>
-
         </div>
-
       </div>
 
       <!-- ===== RIGHT ===== -->
       <div class="sidebar">
-
         <!-- STATUS -->
         <div class="form-card">
-
           <div class="card-header">
-            <h2>
-              وضعیت محصول
-            </h2>
+            <h2>وضعیت محصول</h2>
           </div>
 
           <div class="switch-list">
-
             <div class="switch-item">
-
               <div>
-                <h4>
-                  محصول فعال
-                </h4>
+                <h4>محصول فعال</h4>
 
-                <p>
-                  نمایش در فروشگاه
-                </p>
+                <p>نمایش در فروشگاه</p>
               </div>
 
               <label class="switch">
-
-                <input
-                  type="checkbox"
-                  v-model="form.active"
-                />
+                <input type="checkbox" v-model="form.active" />
 
                 <span></span>
-
               </label>
-
             </div>
 
             <div class="switch-item">
-
               <div>
-                <h4>
-                  محصول ویژه
-                </h4>
+                <h4>محصول ویژه</h4>
 
-                <p>
-                  نمایش در محصولات ویژه
-                </p>
+                <p>نمایش در محصولات ویژه</p>
               </div>
 
               <label class="switch">
-
-                <input
-                  type="checkbox"
-                  v-model="form.featured"
-                />
+                <input type="checkbox" v-model="form.featured" />
 
                 <span></span>
-
               </label>
-
             </div>
-
           </div>
-
         </div>
 
         <!-- ===== PREVIEW ===== -->
         <div class="form-card">
-
           <div class="card-header">
-            <h2>
-              پیش‌نمایش
-            </h2>
+            <h2>پیش‌نمایش</h2>
           </div>
 
           <div class="preview-card">
-
             <div class="preview-image">
-
               <img
                 v-if="previewImages.length"
                 :src="previewImages[0]"
                 alt="preview"
               />
 
-              <i
-                v-else
-                class="mdi mdi-image-outline"
-              ></i>
-
+              <i v-else class="mdi mdi-image-outline"></i>
             </div>
 
             <h3>
-              {{ form.title || 'نام محصول' }}
+              {{ form.title || "نام محصول" }}
             </h3>
 
             <p>
-              {{ form.category || 'دسته‌بندی' }}
+              {{ form.category || "دسته‌بندی" }}
             </p>
 
             <strong>
               {{ format(form.price || 0) }}
             </strong>
-
           </div>
-
         </div>
 
         <!-- ===== ACTIONS ===== -->
         <div class="action-buttons">
-
-          <button
-            class="save-btn"
-            @click="createProduct"
-          >
+          <button class="save-btn" @click="createProduct">
             <i class="mdi mdi-content-save-outline"></i>
 
             ثبت محصول
           </button>
 
-          <button class="draft-btn">
-            ذخیره پیش‌نویس
-          </button>
-
+          <button class="draft-btn">ذخیره پیش‌نویس</button>
         </div>
-
       </div>
-
     </div>
-
   </div>
 </template>
 
 <script setup>
-import { reactive, ref } from "vue"
+import { reactive, ref, onMounted } from "vue";
+
+const categories = ref([]);
 
 /* ===== FORM ===== */
 
 const form = reactive({
   title: "",
+
   category: "",
+  categoryId: "",
+
   brand: "",
   description: "",
 
@@ -496,509 +344,563 @@ const form = reactive({
   active: true,
   featured: false,
 
-  images: []
-})
+  images: [],
+});
 
 /* ===== TAG INPUTS ===== */
 
-const colorInput = ref("")
-const sizeInput = ref("")
+const fetchCategories = async () => {
+  try {
+    const res = await $fetch("/api/categories");
+
+    categories.value = res || [];
+  } catch (error) {
+    console.error("Fetch Categories Error:", error);
+  }
+};
+
+const colorInput = ref("");
+const sizeInput = ref("");
 
 /* ===== IMAGES ===== */
 
-const previewImages = ref([])
+const previewImages = ref([]);
 
 /* ===== ADD COLOR ===== */
 
 const addColor = () => {
+  if (!colorInput.value.trim()) return;
 
-  if (!colorInput.value.trim()) return
+  form.colors.push(colorInput.value);
 
-  form.colors.push(colorInput.value)
-
-  colorInput.value = ""
-}
+  colorInput.value = "";
+};
 
 const removeColor = (index) => {
-  form.colors.splice(index, 1)
-}
+  form.colors.splice(index, 1);
+};
 
 /* ===== ADD SIZE ===== */
 
 const addSize = () => {
+  if (!sizeInput.value.trim()) return;
 
-  if (!sizeInput.value.trim()) return
+  form.sizes.push(sizeInput.value);
 
-  form.sizes.push(sizeInput.value)
-
-  sizeInput.value = ""
-}
+  sizeInput.value = "";
+};
 
 const removeSize = (index) => {
-  form.sizes.splice(index, 1)
-}
+  form.sizes.splice(index, 1);
+};
 
 /* ===== IMAGE UPLOAD ===== */
 
 const handleImagesUpload = (event) => {
-
-  const files = Array.from(event.target.files)
+  const files = Array.from(event.target.files);
 
   files.forEach((file) => {
+    form.images.push(file);
 
-    form.images.push(file)
-
-    const reader = new FileReader()
+    const reader = new FileReader();
 
     reader.onload = (e) => {
-      previewImages.value.push(e.target.result)
-    }
+      previewImages.value.push(e.target.result);
+    };
 
-    reader.readAsDataURL(file)
-
-  })
-
-}
+    reader.readAsDataURL(file);
+  });
+};
 
 const removeImage = (index) => {
+  form.images.splice(index, 1);
 
-  form.images.splice(index, 1)
-
-  previewImages.value.splice(index, 1)
-}
+  previewImages.value.splice(index, 1);
+};
 
 /* ===== CREATE PRODUCT ===== */
 
-const createProduct = () => {
+const createProduct = async () => {
+  
+  console.log("sssss");
+  const selectedCategory = categories.value.find(
+  item => item._id === form.categoryId
+);
+  try {
+    const payload = {
+      title: form.title,
 
-  console.log(form)
+      description: form.description,
 
-  alert("محصول با موفقیت ثبت شد")
-}
+      price: Number(form.price || 0),
+
+      discountPrice: Number(form.discountPrice || 0),
+
+      category: selectedCategory?.name || "",
+
+      categoryId: form.categoryId,
+
+      knitType: form.fabricType,
+
+      material: form.material,
+
+      colors: form.colors,
+
+      sizes: form.sizes,
+
+      images: previewImages.value,
+
+      shippingMethod: "post",
+
+      trackingCode: null,
+
+      stock: Number(form.stock || 0),
+
+      rating: 0,
+
+      soldCount: 0,
+
+      active: form.active,
+
+      featured: form.featured,
+    };
+
+    await $fetch("/api/products/create", {
+      method: "POST",
+      body: payload,
+    });
+
+    alert("محصول با موفقیت ثبت شد");
+
+    navigateTo("/products");
+  } catch (error) {
+    console.error("Create Product Error:", error);
+
+    alert("خطا در ثبت محصول");
+  }
+};
 
 /* ===== FORMAT ===== */
 
 const format = (val) => {
-  return Number(val || 0).toLocaleString("fa-IR")
-}
+  return Number(val || 0).toLocaleString("fa-IR");
+};
+
+onMounted(() => {
+  fetchCategories();
+});
 </script>
 
 <style scoped>
-
-.create-product-page{
-  min-height:100vh;
-  padding:32px;
-  background:#F8F5F2;
-  direction:rtl;
+.create-product-page {
+  min-height: 100vh;
+  padding: 32px;
+  background: #f8f5f2;
+  direction: rtl;
 }
 
 /* ===== HEADER ===== */
 
-.page-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:20px;
-  margin-bottom:24px;
-  flex-wrap:wrap;
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
 }
 
-.page-title{
-  font-size:34px;
-  font-weight:900;
-  color:#1F1F24;
+.page-title {
+  font-size: 34px;
+  font-weight: 900;
+  color: #1f1f24;
 }
 
-.page-subtitle{
-  margin-top:8px;
-  color:#8B5E74;
+.page-subtitle {
+  margin-top: 8px;
+  color: #8b5e74;
 }
 
-.back-btn{
-  height:52px;
-  padding:0 22px;
-  border:none;
-  border-radius:18px;
-  background:white;
-  color:#5B2A4A;
-  display:flex;
-  align-items:center;
-  gap:10px;
-  cursor:pointer;
-  font-weight:700;
+.back-btn {
+  height: 52px;
+  padding: 0 22px;
+  border: none;
+  border-radius: 18px;
+  background: white;
+  color: #5b2a4a;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-weight: 700;
 }
 
 /* ===== LAYOUT ===== */
 
-.form-layout{
-  display:grid;
-  grid-template-columns:1fr 360px;
-  gap:24px;
-  align-items:start;
+.form-layout {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 24px;
+  align-items: start;
 }
 
 /* ===== FORM CARD ===== */
 
-.form-card{
-  background:white;
-  border-radius:30px;
-  padding:28px;
-  margin-bottom:24px;
+.form-card {
+  background: white;
+  border-radius: 30px;
+  padding: 28px;
+  margin-bottom: 24px;
 }
 
-.card-header{
-  margin-bottom:24px;
+.card-header {
+  margin-bottom: 24px;
 }
 
-.card-header h2{
-  font-size:24px;
-  font-weight:800;
-  color:#1F1F24;
+.card-header h2 {
+  font-size: 24px;
+  font-weight: 800;
+  color: #1f1f24;
 }
 
-.card-header p{
-  margin-top:8px;
-  color:#8B5E74;
+.card-header p {
+  margin-top: 8px;
+  color: #8b5e74;
 }
 
 /* ===== FORM ===== */
 
-.form-grid{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:20px;
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
 }
 
-.form-group.full{
-  grid-column:1 / -1;
+.form-group.full {
+  grid-column: 1 / -1;
 }
 
-.form-group label{
-  display:block;
-  margin-bottom:10px;
-  color:#5B2A4A;
-  font-weight:700;
+.form-group label {
+  display: block;
+  margin-bottom: 10px;
+  color: #5b2a4a;
+  font-weight: 700;
 }
 
 .form-group input,
 .form-group select,
-.form-group textarea{
-  width:100%;
-  border:none;
-  background:#F8F5F2;
-  border-radius:18px;
-  padding:16px;
-  font-size:14px;
-  border:1px solid transparent;
+.form-group textarea {
+  width: 100%;
+  border: none;
+  background: #f8f5f2;
+  border-radius: 18px;
+  padding: 16px;
+  font-size: 14px;
+  border: 1px solid transparent;
 }
 
 .form-group input,
-.form-group select{
-  height:56px;
+.form-group select {
+  height: 56px;
 }
 
-.form-group textarea{
-  resize:none;
+.form-group textarea {
+  resize: none;
 }
 
 .form-group input:focus,
 .form-group select:focus,
-.form-group textarea:focus{
-  outline:none;
-  border-color:#C8A96B;
+.form-group textarea:focus {
+  outline: none;
+  border-color: #c8a96b;
 }
 
 /* ===== TAGS ===== */
 
-.tags-input{
-  min-height:58px;
-  background:#F8F5F2;
-  border-radius:18px;
-  padding:12px;
-  display:flex;
-  align-items:center;
-  flex-wrap:wrap;
-  gap:10px;
+.tags-input {
+  min-height: 58px;
+  background: #f8f5f2;
+  border-radius: 18px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
-.tags-input input{
-  border:none;
-  background:transparent;
-  flex:1;
-  min-width:120px;
-  color:#1F1F24;
+.tags-input input {
+  border: none;
+  background: transparent;
+  flex: 1;
+  min-width: 120px;
+  color: #1f1f24;
 }
 
-.tags-input input:focus{
-  outline:none;
+.tags-input input:focus {
+  outline: none;
 }
 
-.tag-item{
-  background:linear-gradient(135deg,#5B2A4A,#C8A96B);
-  color:white;
-  padding:8px 12px;
-  border-radius:999px;
-  display:flex;
-  align-items:center;
-  gap:8px;
-  font-size:13px;
+.tag-item {
+  background: linear-gradient(135deg, #5b2a4a, #c8a96b);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
 }
 
-.tag-item button{
-  border:none;
-  background:transparent;
-  color:white;
-  cursor:pointer;
+.tag-item button {
+  border: none;
+  background: transparent;
+  color: white;
+  cursor: pointer;
 }
 
 /* ===== UPLOAD ===== */
 
-.upload-box{
-  border:2px dashed rgba(200,169,107,.35);
-  border-radius:24px;
-  padding:50px 20px;
-  text-align:center;
-  background:#F8F5F2;
-  position:relative;
+.upload-box {
+  border: 2px dashed rgba(200, 169, 107, 0.35);
+  border-radius: 24px;
+  padding: 50px 20px;
+  text-align: center;
+  background: #f8f5f2;
+  position: relative;
 }
 
-.upload-box i{
-  font-size:70px;
-  color:#C8A96B;
+.upload-box i {
+  font-size: 70px;
+  color: #c8a96b;
 }
 
-.upload-box h3{
-  margin-top:16px;
-  font-size:22px;
-  color:#1F1F24;
+.upload-box h3 {
+  margin-top: 16px;
+  font-size: 22px;
+  color: #1f1f24;
 }
 
-.upload-box p{
-  margin-top:10px;
-  color:#8B5E74;
+.upload-box p {
+  margin-top: 10px;
+  color: #8b5e74;
 }
 
-.upload-box input{
-  position:absolute;
-  inset:0;
-  opacity:0;
-  cursor:pointer;
+.upload-box input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
 }
 
 /* ===== IMAGE PREVIEW ===== */
 
-.preview-grid{
-  margin-top:24px;
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
-  gap:16px;
+.preview-grid {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 16px;
 }
 
-.preview-item{
-  position:relative;
-  border-radius:20px;
-  overflow:hidden;
-  height:160px;
-  background:#F8F5F2;
+.preview-item {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  height: 160px;
+  background: #f8f5f2;
 }
 
-.preview-item img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
+.preview-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-.remove-image{
-  position:absolute;
-  top:10px;
-  left:10px;
-  width:34px;
-  height:34px;
-  border:none;
-  border-radius:12px;
-  background:rgba(0,0,0,.55);
-  color:white;
-  cursor:pointer;
+.remove-image {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.55);
+  color: white;
+  cursor: pointer;
 }
 
 /* ===== SWITCH ===== */
 
-.switch-list{
-  display:flex;
-  flex-direction:column;
-  gap:20px;
+.switch-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
-.switch-item{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:16px;
+.switch-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
 }
 
-.switch-item h4{
-  color:#1F1F24;
-  font-size:16px;
+.switch-item h4 {
+  color: #1f1f24;
+  font-size: 16px;
 }
 
-.switch-item p{
-  margin-top:6px;
-  color:#8B5E74;
-  font-size:13px;
+.switch-item p {
+  margin-top: 6px;
+  color: #8b5e74;
+  font-size: 13px;
 }
 
-.switch{
-  position:relative;
-  width:58px;
-  height:32px;
+.switch {
+  position: relative;
+  width: 58px;
+  height: 32px;
 }
 
-.switch input{
-  display:none;
+.switch input {
+  display: none;
 }
 
-.switch span{
-  position:absolute;
-  inset:0;
-  background:#D1D5DB;
-  border-radius:999px;
-  transition:.3s;
+.switch span {
+  position: absolute;
+  inset: 0;
+  background: #d1d5db;
+  border-radius: 999px;
+  transition: 0.3s;
 }
 
-.switch span::before{
-  content:'';
-  position:absolute;
-  width:24px;
-  height:24px;
-  border-radius:999px;
-  background:white;
-  top:4px;
-  right:4px;
-  transition:.3s;
+.switch span::before {
+  content: "";
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: white;
+  top: 4px;
+  right: 4px;
+  transition: 0.3s;
 }
 
-.switch input:checked + span{
-  background:#5B2A4A;
+.switch input:checked + span {
+  background: #5b2a4a;
 }
 
-.switch input:checked + span::before{
-  transform:translateX(-26px);
+.switch input:checked + span::before {
+  transform: translateX(-26px);
 }
 
 /* ===== PREVIEW ===== */
 
-.preview-card{
-  background:#F8F5F2;
-  border-radius:24px;
-  padding:20px;
-  text-align:center;
+.preview-card {
+  background: #f8f5f2;
+  border-radius: 24px;
+  padding: 20px;
+  text-align: center;
 }
 
-.preview-image{
-  height:220px;
-  border-radius:22px;
-  background:white;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  overflow:hidden;
+.preview-image {
+  height: 220px;
+  border-radius: 22px;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
 }
 
-.preview-image img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
+.preview-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-.preview-image i{
-  font-size:60px;
-  color:#C8A96B;
+.preview-image i {
+  font-size: 60px;
+  color: #c8a96b;
 }
 
-.preview-card h3{
-  margin-top:18px;
-  font-size:20px;
-  font-weight:800;
-  color:#1F1F24;
+.preview-card h3 {
+  margin-top: 18px;
+  font-size: 20px;
+  font-weight: 800;
+  color: #1f1f24;
 }
 
-.preview-card p{
-  margin-top:8px;
-  color:#8B5E74;
+.preview-card p {
+  margin-top: 8px;
+  color: #8b5e74;
 }
 
-.preview-card strong{
-  display:block;
-  margin-top:14px;
-  color:#16A34A;
-  font-size:28px;
+.preview-card strong {
+  display: block;
+  margin-top: 14px;
+  color: #16a34a;
+  font-size: 28px;
 }
 
 /* ===== ACTIONS ===== */
 
-.action-buttons{
-  display:flex;
-  flex-direction:column;
-  gap:14px;
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
 .save-btn,
-.draft-btn{
-  height:56px;
-  border:none;
-  border-radius:18px;
-  font-weight:800;
-  cursor:pointer;
+.draft-btn {
+  height: 56px;
+  border: none;
+  border-radius: 18px;
+  font-weight: 800;
+  cursor: pointer;
 }
 
-.save-btn{
-  background:linear-gradient(135deg,#5B2A4A,#C8A96B);
-  color:white;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:10px;
+.save-btn {
+  background: linear-gradient(135deg, #5b2a4a, #c8a96b);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 }
 
-.draft-btn{
-  background:white;
-  color:#5B2A4A;
+.draft-btn {
+  background: white;
+  color: #5b2a4a;
 }
 
 /* ===== RESPONSIVE ===== */
 
-@media(max-width:1100px){
-
-  .form-layout{
-    grid-template-columns:1fr;
+@media (max-width: 1100px) {
+  .form-layout {
+    grid-template-columns: 1fr;
   }
-
 }
 
-@media(max-width:768px){
-
-  .create-product-page{
-    padding:16px;
+@media (max-width: 768px) {
+  .create-product-page {
+    padding: 16px;
   }
 
-  .page-title{
-    font-size:26px;
+  .page-title {
+    font-size: 26px;
   }
 
-  .form-card{
-    padding:20px;
-    border-radius:24px;
+  .form-card {
+    padding: 20px;
+    border-radius: 24px;
   }
 
-  .form-grid{
-    grid-template-columns:1fr;
+  .form-grid {
+    grid-template-columns: 1fr;
   }
 
-  .preview-image{
-    height:180px;
+  .preview-image {
+    height: 180px;
   }
-
 }
-
 </style>
 ```
