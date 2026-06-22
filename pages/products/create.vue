@@ -89,52 +89,26 @@
             <div class="form-group full">
               <label> رنگ‌بندی </label>
 
-              <div class="tags-input">
-                <div
-                  v-for="(color, index) in form.colors"
-                  :key="index"
-                  class="tag-item"
-                >
-                  {{ color }}
+           <!-- MATERIAL -->
+            <div class="form-group">
+              <label> رنگ‌بندی </label>
 
-                  <button @click="removeColor(index)">
-                    <i class="mdi mdi-close"></i>
-                  </button>
-                </div>
-
-                <input
-                  v-model="colorInput"
-                  type="text"
-                  placeholder="مثال: مشکی"
-                  @keydown.enter.prevent="addColor"
-                />
-              </div>
+              <input
+                v-model="form.colors"
+                type="text"
+                placeholder="مثال:  آبی، قرمز، سبز"
+              />
             </div>
-
-            <!-- SIZES -->
-            <div class="form-group full">
+            </div>
+            <!-- MATERIAL -->
+            <div class="form-group">
               <label> سایزبندی </label>
 
-              <div class="tags-input">
-                <div
-                  v-for="(size, index) in form.sizes"
-                  :key="index"
-                  class="tag-item"
-                >
-                  {{ size }}
-
-                  <button @click="removeSize(index)">
-                    <i class="mdi mdi-close"></i>
-                  </button>
-                </div>
-
-                <input
-                  v-model="sizeInput"
-                  type="text"
-                  placeholder="مثال: XL"
-                  @keydown.enter.prevent="addSize"
-                />
-              </div>
+              <input
+                v-model="form.sizes"
+                type="text"
+                placeholder="مثال: XL, L, M"
+              />
             </div>
 
             <!-- DESCRIPTION -->
@@ -333,8 +307,8 @@ const form = reactive({
   fabricType: "",
   material: "",
 
-  colors: [],
-  sizes: [],
+  colors: "",
+  sizes: "",
 
   price: "",
   discountPrice: "",
