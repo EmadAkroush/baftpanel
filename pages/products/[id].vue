@@ -433,73 +433,185 @@
 </template>
 
 <script setup>
-import { reactive, ref } from "vue"
+import { reactive, ref, onMounted } from "vue";
+import { useRoute } from "vue-router";
+
+const route = useRoute();
+
+const productId = route.params.id;
+
+/* ===== CATEGORIES ===== */
+
+const categories = ref([]);
 
 /* ===== FORM ===== */
 
 const form = reactive({
-  title: "کت لینن مردانه",
-  category: "مردانه",
-  brand: "BAFT",
-  description: "کت لینن بسیار شیک و مناسب استایل تابستانی",
+  title: "",
+  category: "",
+  description: "",
 
-  colors: "مشکی، سفید",
-  sizes: "M, L, XL",
-  texture: "بافت ریز",
-  material: "لینن",
+  colors: "",
+  sizes: "",
+  texture: "",
+  material: "",
 
-  price: 4200000,
-  discountPrice: 3600000,
-  stock: 24,
-  code: "BFT-2201",
+  price: 0,
+  discountPrice: 0,
+  stock: 0,
+  code: "",
 
   active: true,
-  featured: true
-})
+  featured: false,
+
+  images: [],
+});
 
 /* ===== IMAGES ===== */
 
-const imagePreviews = ref([
-  "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?q=80&w=1200&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=1200&auto=format&fit=crop"
-])
+const imagePreviews = ref([]);
+
+/* =========================
+   GET CATEGORIES
+========================= */
+
+async function fetchCategories() {
+  try {
+    const res = await $fetch("/api/categories");
+
+    categories.value = res || [];
+  } catch (err) {
+    console.error("Categories Error:", err);
+  }
+}
+
+/* =========================
+   GET PRODUCT
+========================= */
+
+async function fetchProduct() {
+  try {
+    const product = await $fetch(`/api/products/details`, {
+      query: { productId },
+      method: "GET",
+    });
+
+    form.title = product.title || "";
+    form.category = product.category || "";
+    form.description = product.description || "";
+
+    form.colors = (product.colors || []).join("، ");
+    form.sizes = (product.sizes || []).join(", ");
+
+    form.texture = product.knitType || "";
+    form.material = product.material || "";
+
+    form.price = product.price || 0;
+    form.discountPrice = product.discountPrice || 0;
+    form.stock = product.stock || 0;
+
+    form.code = product.code || "";
+
+    form.active = product.active ?? true;
+    form.featured = product.featured ?? false;
+
+    form.images = product.images || [];
+
+    imagePreviews.value = [...(product.images || [])];
+  } catch (err) {
+    console.error("Product Error:", err);
+  }
+}
+
+/* =========================
+   PAGE LOAD
+========================= */
+
+onMounted(async () => {
+  await fetchCategories();
+  await fetchProduct();
+});
+
+/* =========================
+   IMAGE UPLOAD
+========================= */
 
 function handleImages(event) {
+  const files = event.target.files;
 
-  const files = event.target.files
+  if (!files.length) return;
 
-  if (!files.length) return
-
-  Array.from(files).forEach(file => {
-
-    const reader = new FileReader()
+  Array.from(files).forEach((file) => {
+    const reader = new FileReader();
 
     reader.onload = (e) => {
-      imagePreviews.value.push(e.target.result)
-    }
+      imagePreviews.value.push(e.target.result);
+    };
 
-    reader.readAsDataURL(file)
-
-  })
+    reader.readAsDataURL(file);
+  });
 }
 
 function removeImage(index) {
-  imagePreviews.value.splice(index, 1)
+  imagePreviews.value.splice(index, 1);
 }
 
-/* ===== METHODS ===== */
+/* =========================
+   UPDATE PRODUCT
+========================= */
 
-const updateProduct = () => {
+async function updateProduct() {
+  try {
+    const payload = {
+      title: form.title,
+      description: form.description,
 
-  console.log(form)
+      price: Number(form.price),
+      discountPrice: Number(form.discountPrice),
 
-  alert("محصول با موفقیت بروزرسانی شد")
+      category: form.category,
 
+      knitType: form.texture,
+      material: form.material,
+
+      colors: form.colors
+        ? form.colors.split("،").map((i) => i.trim())
+        : [],
+
+      sizes: form.sizes
+        ? form.sizes.split(",").map((i) => i.trim())
+        : [],
+
+      images: imagePreviews.value,
+
+      stock: Number(form.stock),
+
+      active: form.active,
+      featured: form.featured,
+    };
+
+    await $fetch(`/api/products/${productId}`, {
+      method: "PATCH",
+      body: payload,
+    });
+
+    alert("محصول با موفقیت بروزرسانی شد");
+
+    navigateTo("/products");
+  } catch (err) {
+    console.error("Update Product Error:", err);
+
+    alert("خطا در بروزرسانی محصول");
+  }
 }
+
+/* =========================
+   FORMAT
+========================= */
 
 const format = (val) => {
-  return Number(val || 0).toLocaleString("fa-IR")
-}
+  return Number(val || 0).toLocaleString("fa-IR");
+};
 </script>
 
 <style scoped>

@@ -6,7 +6,7 @@ export default defineEventHandler(async (event) => {
 
     
     try {
-        const data = await $fetch(`${apiBase}/products/${query.id}`, {
+        const data = await $fetch(`${apiBase}/products/${query.productId}`, {
             headers: {
                 'Accept': 'Multipart/Form-Data',
             },
