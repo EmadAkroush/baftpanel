@@ -89,16 +89,16 @@
             <div class="form-group full">
               <label> رنگ‌بندی </label>
 
-           <!-- MATERIAL -->
-            <div class="form-group">
-              <label> رنگ‌بندی </label>
+              <!-- MATERIAL -->
+              <div class="form-group">
+                <label> رنگ‌بندی </label>
 
-              <input
-                v-model="form.colors"
-                type="text"
-                placeholder="مثال:  آبی، قرمز، سبز"
-              />
-            </div>
+                <input
+                  v-model="form.colors"
+                  type="text"
+                  placeholder="مثال:  آبی، قرمز، سبز"
+                />
+              </div>
             </div>
             <!-- MATERIAL -->
             <div class="form-group">
@@ -395,11 +395,10 @@ const removeImage = (index) => {
 /* ===== CREATE PRODUCT ===== */
 
 const createProduct = async () => {
-  
   console.log("sssss");
   const selectedCategory = categories.value.find(
-  item => item._id === form.categoryId
-);
+    (item) => item._id === form.categoryId,
+  );
   try {
     const payload = {
       title: form.title,
@@ -433,6 +432,8 @@ const createProduct = async () => {
       stock: Number(form.stock || 0),
 
       rating: 0,
+
+      code: form.code,
 
       soldCount: 0,
 
