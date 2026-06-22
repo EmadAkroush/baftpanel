@@ -406,6 +406,8 @@ const createProduct = async () => {
 
       description: form.description,
 
+      brand: form.brand,
+
       price: Number(form.price || 0),
 
       discountPrice: Number(form.discountPrice || 0),

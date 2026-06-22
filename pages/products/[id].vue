@@ -451,6 +451,8 @@ const form = reactive({
   category: "",
   description: "",
 
+  brand: "",
+
   colors: "",
   sizes: "",
   texture: "",
@@ -511,6 +513,7 @@ async function fetchProduct() {
     form.stock = product.stock || 0;
 
     form.code = product.code || "";
+    form.brand = product.brand || "";
 
     form.active = product.active ?? true;
     form.featured = product.featured ?? false;
