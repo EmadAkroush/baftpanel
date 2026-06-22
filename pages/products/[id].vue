@@ -500,8 +500,8 @@ async function fetchProduct() {
     form.category = product.category || "";
     form.description = product.description || "";
 
-    form.colors = (product.colors || []).join("، ");
-    form.sizes = (product.sizes || []).join(", ");
+    form.colors = product.colors || "";
+    form.sizes = product.sizes || "";
 
     form.texture = product.knitType || "";
     form.material = product.material || "";
