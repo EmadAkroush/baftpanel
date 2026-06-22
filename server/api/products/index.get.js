@@ -21,8 +21,7 @@ export default defineEventHandler(async (event) => {
       
       },
     });
-    
-    
+    console.log("✅ Investment API Response:", data);
 
     return data;
   } catch (error) {

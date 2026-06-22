@@ -11,7 +11,6 @@
       </div>
 
       <div class="header-actions">
-        
         <NuxtLink to="/products/create">
           <button class="add-btn">
             <i class="mdi mdi-plus"></i>
@@ -172,7 +171,10 @@
                       <i class="mdi mdi-pencil-outline"></i>
                     </button>
                   </nuxt-link>
-                  <button class="action-btn delete">
+                  <button
+                    class="action-btn delete"
+                    @click="deleteProduct(product.id)"
+                  >
                     <i class="mdi mdi-delete-outline"></i>
                   </button>
                 </div>
@@ -204,62 +206,43 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 
 /* ===== PRODUCTS ===== */
-const products = ref([
-  {
-    id: 1,
-    title: "کت لینن مردانه",
-    code: "BFT-2201",
-    category: "مردانه",
-    price: 320,
-    stock: 12,
-    sales: 84,
-    status: "active",
-    image:
-      "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=1200",
-  },
+const products = ref([]);
 
-  {
-    id: 2,
-    title: "پیراهن سفید مینیمال",
-    code: "BFT-2202",
-    category: "مردانه",
-    price: 120,
-    stock: 0,
-    sales: 42,
-    status: "inactive",
-    image:
-      "https://images.unsplash.com/photo-1603252109303-2751441dd157?q=80&w=1200",
-  },
+/* ===== FETCH PRODUCTS ===== */
+async function fetchProducts() {
+  try {
+    const res = await $fetch("/api/products");
 
-  {
-    id: 3,
-    title: "کیف چرم زنانه",
-    code: "BFT-2203",
-    category: "زنانه",
-    price: 540,
-    stock: 8,
-    sales: 62,
-    status: "active",
-    image:
-      "https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=80&w=1200",
-  },
+    products.value = (res || []).map((item) => ({
+      id: item._id,
 
-  {
-    id: 4,
-    title: "عینک مینیمال",
-    code: "BFT-2204",
-    category: "اکسسوری",
-    price: 180,
-    stock: 15,
-    sales: 39,
-    status: "active",
-    image:
-      "https://images.unsplash.com/photo-1511499767150-a48a237f0083?q=80&w=1200",
-  },
-]);
+      title: item.title,
+
+      code: item._id?.slice(-6) || "-",
+
+      category: item.category,
+
+      price: item.discountPrice > 0 ? item.discountPrice : item.price,
+
+      stock: item.stock || 0,
+
+      sales: item.soldCount || 0,
+
+      status: item.active ? "active" : "inactive",
+
+      image:
+        item.images?.[0] ||
+        "https://via.placeholder.com/80x80.png?text=Product",
+    }));
+  } catch (err) {
+    console.error("Products Error:", err);
+  }
+}
+
+onMounted(fetchProducts);
 
 /* ===== FILTERS ===== */
 const search = ref("");
@@ -273,7 +256,9 @@ const perPage = 5;
 /* ===== FILTERED ===== */
 const filteredProducts = computed(() => {
   return products.value.filter((item) => {
-    const matchSearch = item.title.includes(search.value);
+    const matchSearch = item.title
+      ?.toLowerCase()
+      .includes(search.value.toLowerCase());
 
     const matchCategory =
       !selectedCategory.value || item.category === selectedCategory.value;
@@ -306,6 +291,28 @@ const outOfStock = computed(
   () => products.value.filter((p) => p.stock <= 0).length,
 );
 
+/* ===== DELETE PRODUCT ===== */
+async function deleteProduct(id) {
+  const confirmed = confirm("آیا از حذف این محصول مطمئن هستید؟");
+
+  if (!confirmed) return;
+
+  try {
+    await $fetch("/api/products/delete", {
+      method: "DELETE",
+      query: {
+        id,
+      },
+    });
+
+    await fetchProducts();
+  } catch (err) {
+    console.error(err);
+
+    alert("خطا در حذف محصول");
+  }
+}
+
 /* ===== METHODS ===== */
 const prevPage = () => {
   if (page.value > 1) {
@@ -320,7 +327,7 @@ const nextPage = () => {
 };
 
 const format = (val) => {
-  return Number(val).toLocaleString("fa-IR");
+  return Number(val || 0).toLocaleString("fa-IR");
 };
 </script>
 
