@@ -165,12 +165,12 @@
             <h3>آپلود تصاویر</h3>
 
             <p>امکان انتخاب چند تصویر وجود دارد</p>
-
+شیی 
             <input
               type="file"
               multiple
               accept="image/*"
-              @change="handleImages"
+              @change="handleImagesUpload"
             />
           </div>
 
@@ -386,26 +386,24 @@ onMounted(async () => {
    IMAGE UPLOAD
 ========================= */
 
-function handleImages(event) {
-  const files = event.target.files;
+const handleImagesUpload = (event) => {
+  const files = Array.from(event.target.files);
 
-  if (!files.length) return;
+  files.forEach((file) => {
+    form.images.push(file);
 
-  Array.from(files).forEach((file) => {
-    const reader = new FileReader();
-
-    reader.onload = (e) => {
-      imagePreviews.value.push(e.target.result);
-    };
-
-    reader.readAsDataURL(file);
+    // فقط برای نمایش Preview
+    imagePreviews.value.push(URL.createObjectURL(file));
   });
-}
+};
 
-function removeImage(index) {
+const removeImage = (index) => {
+  form.images.splice(index, 1);
+  
+  URL.revokeObjectURL(imagePreviews.value[index]);
+
   imagePreviews.value.splice(index, 1);
-}
-
+};
 /* =========================
    UPDATE PRODUCT
 ========================= */
@@ -440,6 +438,8 @@ async function updateProduct() {
       sizes: form.sizes,
 
       shippingMethod: "post",
+
+      images: imagePreviews.value,
 
       trackingCode: null,
 

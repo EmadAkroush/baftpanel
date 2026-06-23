@@ -370,24 +370,22 @@ const removeSize = (index) => {
 
 /* ===== IMAGE UPLOAD ===== */
 
+
 const handleImagesUpload = (event) => {
   const files = Array.from(event.target.files);
 
   files.forEach((file) => {
     form.images.push(file);
 
-    const reader = new FileReader();
-
-    reader.onload = (e) => {
-      previewImages.value.push(e.target.result);
-    };
-
-    reader.readAsDataURL(file);
+    // فقط برای نمایش Preview
+    previewImages.value.push(URL.createObjectURL(file));
   });
 };
 
 const removeImage = (index) => {
   form.images.splice(index, 1);
+
+  URL.revokeObjectURL(previewImages.value[index]);
 
   previewImages.value.splice(index, 1);
 };
