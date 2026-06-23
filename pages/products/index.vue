@@ -78,11 +78,13 @@
       <select v-model="selectedCategory">
         <option value="">همه دسته‌بندی‌ها</option>
 
-        <option value="مردانه">مردانه</option>
-
-        <option value="زنانه">زنانه</option>
-
-        <option value="اکسسوری">اکسسوری</option>
+        <option
+          v-for="category in categories"
+          :key="category._id"
+          :value="category.name"
+        >
+          {{ category.name }}
+        </option>
       </select>
 
       <select v-model="selectedStatus">
@@ -211,6 +213,18 @@ import { ref, computed, onMounted } from "vue";
 /* ===== PRODUCTS ===== */
 const products = ref([]);
 
+const categories = ref([]);
+
+async function fetchCategories() {
+  try {
+    const res = await $fetch("/api/categories");
+
+    categories.value = res || [];
+  } catch (err) {
+    console.error("Categories Error:", err);
+  }
+}
+
 /* ===== FETCH PRODUCTS ===== */
 async function fetchProducts() {
   try {
@@ -242,7 +256,10 @@ async function fetchProducts() {
   }
 }
 
-onMounted(fetchProducts);
+onMounted(async () => {
+  await fetchCategories();
+  await fetchProducts();
+});
 
 /* ===== FILTERS ===== */
 const search = ref("");
