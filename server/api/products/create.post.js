@@ -17,7 +17,7 @@ export default defineEventHandler(async (event) => {
     const data = await $fetch(`${apiBase}/products`, {
       method: 'POST',
       headers: {
-        'Accept': 'application/json',
+        'Accept': 'Multipart/Form-Data',
 
       },
       body,

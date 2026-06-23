@@ -40,13 +40,14 @@
 
             <div class="form-group">
               <label> دسته‌بندی </label>
-              <select v-model="form.category">
+
+              <select v-model="form.categoryId">
                 <option value="">انتخاب دسته‌بندی</option>
 
                 <option
                   v-for="category in categories"
                   :key="category._id"
-                  :value="category.name"
+                  :value="category._id"
                 >
                   {{ category.name }}
                 </option>
@@ -287,17 +288,13 @@ const productId = route.params.id;
 
 const categories = ref([]);
 
-
-
-
-
 /* ===== FORM ===== */
 
 const form = reactive({
   title: "",
   category: "",
+  categoryId: "",
 
-  
   description: "",
 
   brand: "",
@@ -349,6 +346,7 @@ async function fetchProduct() {
 
     form.title = product.title || "";
     form.category = product.category || "";
+    form.categoryId = product.categoryId || "";
     form.description = product.description || "";
 
     form.colors = product.colors || "";
@@ -413,32 +411,53 @@ function removeImage(index) {
 ========================= */
 
 async function updateProduct() {
+  const selectedCategory = categories.value.find(
+    (item) => item._id === form.categoryId,
+  );
+
   try {
     const payload = {
       title: form.title,
+
       description: form.description,
 
-      price: Number(form.price),
-      discountPrice: Number(form.discountPrice),
+      brand: form.brand,
 
-      category: form.category,
+      price: Number(form.price || 0),
 
-      knitType: form.texture,
+      discountPrice: Number(form.discountPrice || 0),
+
+      category: selectedCategory?.name || "",
+
+      categoryId: form.categoryId,
+
+      knitType: form.fabricType,
+
       material: form.material,
 
-      colors: form.colors ? form.colors.split("،").map((i) => i.trim()) : [],
+      colors: form.colors,
 
-      sizes: form.sizes ? form.sizes.split(",").map((i) => i.trim()) : [],
+      sizes: form.sizes,
 
-      images: imagePreviews.value,
+      shippingMethod: "post",
 
-      stock: Number(form.stock),
+      trackingCode: null,
+
+      stock: Number(form.stock || 0),
+
+      rating: 0,
+
+      code: form.code,
+
+      soldCount: 0,
 
       active: form.active,
+
       featured: form.featured,
     };
 
-    await $fetch(`/api/products/${productId}`, {
+    await $fetch(`/api/products/update`, {
+      query: { productId },
       method: "PATCH",
       body: payload,
     });
