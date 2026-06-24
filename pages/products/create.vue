@@ -370,7 +370,6 @@ const removeSize = (index) => {
 
 /* ===== IMAGE UPLOAD ===== */
 
-
 const handleImagesUpload = (event) => {
   const files = Array.from(event.target.files);
 
@@ -393,68 +392,62 @@ const removeImage = (index) => {
 /* ===== CREATE PRODUCT ===== */
 
 const createProduct = async () => {
-  console.log("sssss");
-  const selectedCategory = categories.value.find(
-    (item) => item._id === form.categoryId,
-  );
   try {
-    const payload = {
-      title: form.title,
+    const selectedCategory = categories.value.find(
+      (item) => item._id === form.categoryId,
+    );
 
-      description: form.description,
+    const formData = new FormData();
 
-      brand: form.brand,
+    formData.append("title", form.title);
+    formData.append("description", form.description);
+    formData.append("brand", form.brand);
 
-      price: Number(form.price || 0),
+    formData.append("price", String(form.price || 0));
 
-      discountPrice: Number(form.discountPrice || 0),
+    formData.append("discountPrice", String(form.discountPrice || 0));
 
-      category: selectedCategory?.name || "",
+    formData.append("category", selectedCategory?.name || "");
 
-      categoryId: form.categoryId,
+    formData.append("categoryId", form.categoryId);
 
-      knitType: form.fabricType,
+    formData.append("knitType", form.fabricType);
 
-      material: form.material,
+    formData.append("material", form.material);
 
-      colors: form.colors,
+    formData.append("colors", form.colors);
 
-      sizes: form.sizes,
+    formData.append("sizes", form.sizes);
 
-      images: previewImages.value,
+    formData.append("stock", String(form.stock || 0));
 
-      shippingMethod: "post",
+    formData.append("code", form.code);
 
-      trackingCode: null,
+    formData.append("active", String(form.active));
 
-      stock: Number(form.stock || 0),
+    formData.append("featured", String(form.featured));
 
-      rating: 0,
+    form.images.forEach((file) => {
+      formData.append("images", file);
+    });
 
-      code: form.code,
+    for (const pair of formData.entries()) {
+      console.log(pair[0], pair[1]);
+    }
 
-      soldCount: 0,
-
-      active: form.active,
-
-      featured: form.featured,
-    };
-
-    await $fetch("/api/products/create", {
+    await $fetch("http://localhost:3500/products", {
       method: "POST",
-      body: payload,
+      body: formData,
     });
 
     alert("محصول با موفقیت ثبت شد");
-
+   
+    
     navigateTo("/products");
   } catch (error) {
-    console.error("Create Product Error:", error);
-
-    alert("خطا در ثبت محصول");
+    console.error(error);
   }
 };
-
 /* ===== FORMAT ===== */
 
 const format = (val) => {
