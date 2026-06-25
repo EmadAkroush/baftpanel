@@ -165,7 +165,7 @@
             <h3>آپلود تصاویر</h3>
 
             <p>امکان انتخاب چند تصویر وجود دارد</p>
-شیی 
+            شیی
             <input
               type="file"
               multiple
@@ -368,7 +368,7 @@ async function fetchProduct() {
     form.images = product.images || [];
 
     imagePreviews.value = [...(product.images || [])].map(
-      (img) => `${config.public.apiBase}${img}`
+      (img) => `${config.public.apiBase}${img}`,
     );
   } catch (err) {
     console.error("Product Error:", err);
@@ -388,6 +388,8 @@ onMounted(async () => {
    IMAGE UPLOAD
 ========================= */
 
+/* ===== IMAGE UPLOAD ===== */
+
 const handleImagesUpload = (event) => {
   const files = Array.from(event.target.files);
 
@@ -401,76 +403,71 @@ const handleImagesUpload = (event) => {
 
 const removeImage = (index) => {
   form.images.splice(index, 1);
-  
+
   URL.revokeObjectURL(imagePreviews.value[index]);
 
   imagePreviews.value.splice(index, 1);
 };
+
 /* =========================
    UPDATE PRODUCT
 ========================= */
 
 async function updateProduct() {
-  const selectedCategory = categories.value.find(
-    (item) => item._id === form.categoryId,
-  );
-
   try {
-    const payload = {
-      title: form.title,
+    const selectedCategory = categories.value.find(
+      (item) => item._id === form.categoryId,
+    );
 
-      description: form.description,
+    const formData = new FormData();
 
-      brand: form.brand,
+    formData.append("title", form.title);
+    formData.append("description", form.description);
+    formData.append("brand", form.brand);
 
-      price: Number(form.price || 0),
+    formData.append("price", String(form.price || 0));
 
-      discountPrice: Number(form.discountPrice || 0),
+    formData.append("discountPrice", String(form.discountPrice || 0));
 
-      category: selectedCategory?.name || "",
+    formData.append("category", selectedCategory?.name || "");
 
-      categoryId: form.categoryId,
+    formData.append("categoryId", form.categoryId);
 
-      knitType: form.fabricType,
+    formData.append("knitType", form.fabricType);
 
-      material: form.material,
+    formData.append("material", form.material);
 
-      colors: form.colors,
+    formData.append("colors", form.colors);
 
-      sizes: form.sizes,
+    formData.append("sizes", form.sizes);
 
-      shippingMethod: "post",
+    formData.append("stock", String(form.stock || 0));
 
-      images: imagePreviews.value,
+    formData.append("code", form.code);
 
-      trackingCode: null,
+    formData.append("active", String(form.active));
 
-      stock: Number(form.stock || 0),
+    formData.append("featured", String(form.featured));
 
-      rating: 0,
-
-      code: form.code,
-
-      soldCount: 0,
-
-      active: form.active,
-
-      featured: form.featured,
-    };
-
-    await $fetch(`/api/products/update`, {
-      query: { productId },
-      method: "PATCH",
-      body: payload,
+    form.images.forEach((file) => {
+      formData.append("images", file);
     });
 
-    alert("محصول با موفقیت بروزرسانی شد");
+    for (const pair of formData.entries()) {
+      console.log(pair[0], pair[1]);
+    }
+    console.log("hhhh");
+
+    let res = await $fetch(`http://localhost:3500/products/${productId}`, {
+      method: "PATCH",
+      body: formData,
+    });
+    console.log("111" , res );
+    alert("محصول با موفقیت آپدیت شد");
 
     navigateTo("/products");
-  } catch (err) {
-    console.error("Update Product Error:", err);
-
-    alert("خطا در بروزرسانی محصول");
+  } catch (error) {
+    console.error(error);
   }
 }
 
