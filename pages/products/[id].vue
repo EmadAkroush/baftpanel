@@ -269,7 +269,7 @@
             ذخیره تغییرات
           </button>
 
-          <button class="draft-btn">ذخیره پیش‌نویس</button>
+       
         </div>
       </div>
     </div>

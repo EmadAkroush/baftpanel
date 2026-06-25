@@ -281,7 +281,7 @@
             ثبت محصول
           </button>
 
-          <button class="draft-btn">ذخیره پیش‌نویس</button>
+       
         </div>
       </div>
     </div>
