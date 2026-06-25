@@ -279,7 +279,7 @@
 <script setup>
 import { reactive, ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
-
+const config = useRuntimeConfig();
 const route = useRoute();
 
 const productId = route.params.id;
@@ -367,7 +367,9 @@ async function fetchProduct() {
 
     form.images = product.images || [];
 
-    imagePreviews.value = [...(product.images || [])];
+    imagePreviews.value = [...(product.images || [])].map(
+      (img) => `${config.public.apiBase}${img}`
+    );
   } catch (err) {
     console.error("Product Error:", err);
   }

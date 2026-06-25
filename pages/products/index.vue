@@ -210,6 +210,8 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
 
+const config = useRuntimeConfig();
+
 /* ===== PRODUCTS ===== */
 const products = ref([]);
 
@@ -250,7 +252,7 @@ async function fetchProducts() {
       status: item.active ? "active" : "inactive",
 
       image: item.images?.[0]
-        ? `http://localhost:3500${item.images[0]}`
+        ? `${config.public.apiBase}${item.images[0]}`
         : "https://via.placeholder.com/80x80.png?text=Product",
     }));
   } catch (err) {
