@@ -230,7 +230,12 @@ async function fetchCategories() {
 /* ===== FETCH PRODUCTS ===== */
 async function fetchProducts() {
   try {
-    const res = await $fetch("/api/products");
+    const res = await $fetch("/api/products" , {
+      method: "GET",
+      query: {
+        page,
+      },
+    });
 
     console.log("ff", res);
 
