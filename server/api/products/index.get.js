@@ -5,6 +5,7 @@ export default defineEventHandler(async (event) => {
 
   // 🟢 گرفتن توکن از کوکی
   const accessToken = getCookie(event, "accessToken");
+  const query = getQuery(event);
 
   if (!accessToken) {
     throw createError({
@@ -15,11 +16,9 @@ export default defineEventHandler(async (event) => {
 
   try {
     // 🟢 ارسال درخواست به بک‌اند finalxcard با توکن
-    const data = await $fetch(`${apiBase}/products`, {
+    const data = await $fetch(`${apiBase}/products/?page=${query.page}`, {
       method: "GET",
-      headers: {
-      
-      },
+      headers: {},
     });
     console.log("✅ Investment API Response:", data);
 

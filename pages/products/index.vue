@@ -29,7 +29,7 @@
 
         <div>
           <span>کل محصولات</span>
-          <strong>{{ products.length }}</strong>
+          <strong>{{ totalProducts }}</strong>
         </div>
       </div>
 
@@ -113,7 +113,7 @@
           </thead>
 
           <tbody>
-            <tr v-for="product in paginatedProducts" :key="product.id">
+            <tr v-for="product in products" :key="product.id">
               <!-- PRODUCT -->
               <td>
                 <div class="product-info">
@@ -195,7 +195,7 @@
             v-for="p in totalPages"
             :key="p"
             :class="{ active: page === p }"
-            @click="page = p"
+            @click="changePage(p)"
           >
             {{ p }}
           </button>
@@ -217,6 +217,18 @@ const products = ref([]);
 
 const categories = ref([]);
 
+const page = ref(1);
+
+const totalPages = ref(1);
+
+const totalProducts = ref(0);
+
+const changePage = async (p) => {
+  page.value = p;
+
+  await fetchProducts();
+};
+
 async function fetchCategories() {
   try {
     const res = await $fetch("/api/categories");
@@ -229,17 +241,20 @@ async function fetchCategories() {
 
 /* ===== FETCH PRODUCTS ===== */
 async function fetchProducts() {
+
   try {
-    const res = await $fetch("/api/products" , {
+    const res = await $fetch("/api/products", {
       method: "GET",
       query: {
-        page,
+        page: page.value,
       },
     });
+  console.log("Fetching products for page:", page.value);
+    totalPages.value = res.pagination.totalPages || 1;
 
-    console.log("ff", res);
+    totalProducts.value = res.pagination.total || 0;
 
-    products.value = (res || []).map((item) => ({
+    products.value = (res.data || []).map((item) => ({
       id: item._id,
 
       title: item.title,
@@ -275,9 +290,22 @@ const search = ref("");
 const selectedCategory = ref("");
 const selectedStatus = ref("");
 
-/* ===== PAGINATION ===== */
-const page = ref(1);
-const perPage = 5;
+const nextPage = async () => {
+  if (page.value < totalPages.value) {
+    page.value++;
+
+    await fetchProducts();
+  }
+};
+
+const prevPage = async () => {
+  if (page.value > 1) {
+    page.value--;
+
+    await fetchProducts();
+  }
+};
+
 
 /* ===== FILTERED ===== */
 const filteredProducts = computed(() => {
@@ -294,18 +322,6 @@ const filteredProducts = computed(() => {
 
     return matchSearch && matchCategory && matchStatus;
   });
-});
-
-/* ===== TOTAL PAGES ===== */
-const totalPages = computed(() =>
-  Math.ceil(filteredProducts.value.length / perPage),
-);
-
-/* ===== PAGINATED ===== */
-const paginatedProducts = computed(() => {
-  const start = (page.value - 1) * perPage;
-
-  return filteredProducts.value.slice(start, start + perPage);
 });
 
 /* ===== STATS ===== */
@@ -340,17 +356,6 @@ async function deleteProduct(id) {
 }
 
 /* ===== METHODS ===== */
-const prevPage = () => {
-  if (page.value > 1) {
-    page.value--;
-  }
-};
-
-const nextPage = () => {
-  if (page.value < totalPages.value) {
-    page.value++;
-  }
-};
 
 const format = (val) => {
   return Number(val || 0).toLocaleString("fa-IR");
