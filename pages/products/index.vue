@@ -113,7 +113,7 @@
           </thead>
 
           <tbody>
-            <tr v-for="product in products" :key="product.id">
+            <tr v-for="product in filteredProducts" :key="product.id">
               <!-- PRODUCT -->
               <td>
                 <div class="product-info">
