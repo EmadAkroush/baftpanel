@@ -284,6 +284,8 @@ const route = useRoute();
 
 const productId = route.params.id;
 
+
+
 /* ===== CATEGORIES ===== */
 
 const categories = ref([]);
@@ -458,7 +460,7 @@ async function updateProduct() {
     }
     console.log("hhhh");
 
-    let res = await $fetch(`http://localhost:3500/products/${productId}`, {
+    let res = await $fetch(`${config.public.apiBase}/products/${productId}`, {
       method: "PATCH",
       body: formData,
     });

@@ -291,6 +291,8 @@
 <script setup>
 import { reactive, ref, onMounted } from "vue";
 
+const config = useRuntimeConfig();
+
 const categories = ref([]);
 
 /* ===== FORM ===== */
@@ -435,7 +437,7 @@ const createProduct = async () => {
       console.log(pair[0], pair[1]);
     }
 
-    await $fetch("http://localhost:3500/products", {
+    await $fetch(`${config.public.apiBase}/products`, {
       method: "POST",
       body: formData,
     });
