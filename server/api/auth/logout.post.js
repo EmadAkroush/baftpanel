@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
       method: "POST",
       headers: {
         Accept: "application/json",
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: accessToken,
       },
     });
 

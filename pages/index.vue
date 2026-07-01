@@ -178,6 +178,9 @@
 import { ref } from "vue";
 import Chart from "primevue/chart";
 
+definePageMeta({ middleware: "auth" });
+const { authUser } = useAuth();
+
 /* ===== Stats ===== */
 const statCards = ref([
   {

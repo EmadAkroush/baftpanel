@@ -48,6 +48,7 @@
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
 import InputOtp from "primevue/inputotp";
+const { authUser } = useAuth();
 
 definePageMeta({
   layout: false,
@@ -125,7 +126,7 @@ const verifyOtp = async () => {
   
      authUser.value = res;
 
-    await  navigateTo("/account");
+    await  navigateTo("/");
   } catch (err) {
     console.error(err);
 

@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
             credentials: 'include', // 🔥 بدون این، کوکی‌ها منتقل نمی‌شن
             headers: {
                 'Accept': 'application/json',
-                'Authorization': `Bearer ${refreshToken}`
+                'Authorization': refreshToken
             }
         })
 
@@ -39,7 +39,11 @@ export default defineEventHandler(async (event) => {
 
         return data;
     } catch (error) {
-     
+        console.log("========== REFRESH TOKEN ERROR ==========");
+        console.log(error.data);
+        console.log(error.response?._data);
+        console.log(error);
+        throw error;
         
         if(error.statusCode == 401) {
             setCookie(event, 'refreshToken', '', {
