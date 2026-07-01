@@ -3,15 +3,10 @@ export default defineEventHandler(async (event) => {
   const { public: { apiBase } } = useRuntimeConfig()
 
   // 🟢 گرفتن توکن از کوکی
-  const accessToken = getCookie(event, 'accessToken')
 
-  if (!accessToken) {
-    throw createError({
-      statusCode: 401,
-      statusMessage: 'Unauthorized - Token missing',
-    })
-  }
- console.log("jjjjj5555555");
+
+
+
   try {
     // 🟢 ارسال درخواست به بک‌اند finalxcard با توکن
     const data = await $fetch(`${apiBase}/products`, {
@@ -23,7 +18,7 @@ export default defineEventHandler(async (event) => {
       body,
     })
 
-    console.log("jjjjj" , data);
+
   
     
 

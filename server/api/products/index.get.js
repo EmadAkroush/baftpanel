@@ -3,24 +3,17 @@ export default defineEventHandler(async (event) => {
     public: { apiBase },
   } = useRuntimeConfig();
 
-  // 🟢 گرفتن توکن از کوکی
-  const accessToken = getCookie(event, "accessToken");
+
   const query = getQuery(event);
 
-  if (!accessToken) {
-    throw createError({
-      statusCode: 401,
-      statusMessage: "Unauthorized - Token missing",
-    });
-  }
-
+ 
   try {
     // 🟢 ارسال درخواست به بک‌اند finalxcard با توکن
     const data = await $fetch(`${apiBase}/products/?page=${query.page}`, {
       method: "GET",
       headers: {},
     });
-    console.log("✅ Investment API Response:", data);
+
 
     return data;
   } catch (error) {
