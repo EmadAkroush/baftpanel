@@ -1,239 +1,182 @@
 <template>
-  <div class="min-h-screen bg-main flex items-center justify-center p-4">
+  <div class="login-page">
+    <div class="bg-circle c1"></div>
+    <div class="bg-circle c2"></div>
 
-    <div class="w-full max-w-md bg-card shadow-2xl rounded-2xl p-8 border border-purple-900/40 backdrop-blur-sm">
+    <div class="login-card">
+      <div class="logo">🧵</div>
 
-      <!-- Logo -->
-      <div class="flex justify-center mb-8">
-        <img src="" class="w-28 opacity-80" alt="Logo" />
+      <h1>پنل مدیریت بافت</h1>
+      <p class="subtitle">ورود مدیران با کد یکبار مصرف</p>
+
+      <div v-if="step === 1">
+        <InputText
+          v-model="phone"
+          class="custom-input w-full"
+          placeholder="شماره موبایل"
+        />
+        <Button
+          label="ارسال کد ورود"
+          class="custom-btn w-full mt-4"
+          @click="sendOtp"
+        />
       </div>
 
-      <!-- Title -->
-      <h2 class="text-2xl font-bold text-center text-white mb-2">
-        Welcome Back
-      </h2>
-      <p class="text-center text-gray-400 mb-6 text-sm">
-        Please sign in to your admin dashboard
-      </p>
+      <div v-else>
+        <p class="text-center mb-4" style="color: azure;" >کد ارسال شده به {{ phone }}</p>
 
-      <!-- Form -->
-      <form @submit.prevent="login" class="space-y-5">
-        
-        <!-- Email -->
-        <div>
-          <label class="block text-sm font-medium text-gray-300 mb-1">
-            Email
-          </label>
-          <InputText 
-            v-model="formData.email"
-            placeholder="Enter email"
-            class="w-full custom-input"
-          />
+        <InputOtp v-model="otp" :length="6" integerOnly class="otp-box" />
+
+        <div class="flex justify-between mt-5">
+          <button v-if="timer === 0" class="link-btn" @click="sendOtp">
+            ارسال مجدد
+          </button>
+          <span v-else style="color: azure;" >{{ timer }}</span>
         </div>
 
-        <!-- Password -->
-        <div>
-          <label class="block text-sm font-medium text-gray-300 mb-1">
-            Password
-          </label>
-          <Password
-            v-model="formData.password"
-            placeholder="Enter password"
-            :feedback="false"
-            toggle-mask
-            class="w-full custom-input"
-          />
-        </div>
-
-        <!-- Recaptcha -->
-        <div id="recaptcha-login" class="flex justify-center mt-2"></div>
-
-        <!-- Errors -->
-        <div 
-          v-if="errors.length" 
-          class="bg-red-900/30 border border-red-500/30 text-red-400 text-sm p-3 rounded-lg"
-        >
-          <ul>
-            <li v-for="e in errors" :key="e">{{ e }}</li>
-          </ul>
-        </div>
-
-        <!-- Button -->
         <Button
-          type="submit"
-          :loading="loading"
-          label="Sign In"
-          class="w-full custom-btn"
+          label="ورود به پنل"
+          class="custom-btn w-full mt-5"
+          @click="verifyOtp"
         />
-
-      </form>
-
+      </div>
     </div>
-
-    <Toast />
   </div>
 </template>
 
 <script setup>
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
-import Password from "primevue/password";
-import { useToast } from "primevue/usetoast";
-
-const recaptchaWidgetId = ref(null);
-const recaptchaToken = ref("");
+import InputOtp from "primevue/inputotp";
 
 definePageMeta({
   layout: false,
   middleware: "guest",
 });
 
-const toast = useToast();
-const loading = ref(false);
-const errors = ref([]);
+const phone = ref("");
+const otp = ref("");
+const step = ref(1);
+const timer = ref(120);
+let interval;
 
-onMounted(() => {
-  const SITE_KEY = "6Lcq2XksAAAAAC7Oh8J6tBiqvT23twQYSaOxSyoF";
-
-  const tryRender1 = () => {
-    if (typeof window !== "undefined" && window.grecaptcha) {
-      if (recaptchaWidgetId.value !== null) return;
-
-      try {
-        recaptchaWidgetId.value = window.grecaptcha.render(
-          "recaptcha-login",
-          {
-            sitekey: SITE_KEY,
-            callback: (token) => {
-              recaptchaToken.value = token;
-            },
-            "expired-callback": () => {
-              recaptchaToken.value = "";
-            },
-            "error-callback": () => {
-              recaptchaToken.value = "";
-            },
-          }
-        );
-      } catch (e) {
-        console.warn("reCAPTCHA render error:", e);
-      }
-    } else {
-      setTimeout(tryRender1, 500);
-    }
-  };
-
-  tryRender1();
-});
-
-const formData = reactive({
-  email: "",
-  password: "",
-});
-
-function validateForm() {
-  errors.value = [];
-
-  if (!formData.email) errors.value.push("email is required.");
-  if (!formData.password || formData.password.length < 6)
-    errors.value.push("Password must be at least 6 characters.");
-
-  return errors.value.length === 0;
+function startTimer() {
+  clearInterval(interval);
+  timer.value = 120;
+  interval = setInterval(() => {
+    if (timer.value > 0) timer.value--;
+    else clearInterval(interval);
+  }, 1000);
 }
 
-async function login() {
-  if (!validateForm()) return;
+async function sendOtp() {
+  // await $fetch('/api/auth/send-otp',{method:'POST',body:{phone:phone.value}})
+  step.value = 2;
+  startTimer();
+}
 
-  if (!recaptchaToken.value) {
-    errors.value.push("Please complete the reCAPTCHA to continue.");
-    return;
-  }
-
-  try {
-    loading.value = true;
-
-    const user = await $fetch("/api/auth/login", {
-      method: "POST",
-      body: { ...formData, recaptchaToken: recaptchaToken.value },
-    });
-
-    toast.add({
-      severity: "success",
-      summary: "Login Successful",
-      detail: "Welcome to your dashboard",
-      life: 3000,
-    });
-
-    const { authUser } = useAuth();
-    authUser.value = user;
-
-    return navigateTo("/");
-  } catch (e) {
-    errors.value = Object.values(e.data?.data || { error: "Login failed" }).flat();
-  } finally {
-    loading.value = false;
-  }
+async function verifyOtp() {
+  // await $fetch('/api/auth/verify-otp',{method:'POST',body:{phone:phone.value,code:otp.value}})
 }
 </script>
 
-<style>
-/* Background */
-.bg-main {
-  background: radial-gradient(circle at top, #1a0f5a, #090040);
+<style scoped>
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: radial-gradient(circle at top, #471396, #090040 70%, #05011e);
+  position: relative;
+  overflow: hidden;
+  font-family: IRANSansX, Tahoma, sans-serif;
+  color: #fff;
 }
-
-/* Card */
-.bg-card {
-  background: rgba(71, 19, 150, 0.6);
-}
-
-/* Inputs */
-.custom-input :deep(input) {
-  background: #0f0a3a;
+.login-card {
+  width: 430px;
+  padding: 40px;
+  border-radius: 28px;
+  background: rgba(19, 18, 54, 0.75);
+  backdrop-filter: blur(18px);
   border: 1px solid rgba(177, 59, 255, 0.3);
-  color: white;
-  border-radius: 10px;
-  transition: all 0.25s ease;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+  z-index: 2;
+  color: #fff !important;
 }
-
-.custom-input :deep(input::placeholder) {
-  color: #9ca3af;
+.logo {
+  font-size: 48px;
+  text-align: center;
 }
-
-.custom-input :deep(input:focus) {
-  border-color: #B13BFF;
-  box-shadow: 0 0 0 2px rgba(177, 59, 255, 0.3),
-              0 0 12px rgba(177, 59, 255, 0.4);
+h1 {
+  text-align: center;
+  color: #fff;
 }
-
-/* Button */
+.subtitle {
+  text-align: center;
+  color: #bbb;
+  margin-bottom: 30px;
+}
+.custom-input :deep(input) {
+  height: 58px;
+  background: #120b42;
+  border-radius: 14px;
+  color: #fff;
+  border: 1px solid rgba(177, 59, 255, 0.35);
+  text-align: center;
+}
 .custom-btn {
-  background: linear-gradient(135deg, #B13BFF, #471396);
+  height: 56px;
   border: none;
-  border-radius: 12px;
-  padding: 0.7rem;
-  font-weight: 600;
-  color: white;
-  transition: all 0.3s ease;
-  box-shadow: 0 0 12px rgba(177, 59, 255, 0.4);
-}
-
-.custom-btn:hover {
-  background: linear-gradient(135deg, #FFCC00, #B13BFF);
-  box-shadow: 0 0 16px rgba(255, 204, 0, 0.6);
-  transform: translateY(-1px);
-}
-
-/* Password */
-.p-password {
-  width: 100%;
-}
-.custom-btn {
-  background: linear-gradient(135deg, #B13BFF, #471396) !important;
-  border: none !important;
-  color: white !important;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #b13bff, #471396) !important;
 }
 .custom-btn:hover {
-  background: linear-gradient(135deg, #FFCC00, #B13BFF) !important;
+  background: linear-gradient(135deg, #ffd54a, #b13bff) !important;
+}
+.otp-box {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  direction: ltr;
+  margin-top: 20px;
+}
+.otp-box :deep(input) {
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  background: #120b42;
+  border: 1px solid rgba(177, 59, 255, 0.35);
+  color: #fff;
+  font-size: 24px;
+  text-align: center;
+}
+.otp-box :deep(input:focus) {
+  border-color: #ffd54a;
+  box-shadow: 0 0 15px rgba(255, 213, 74, 0.35);
+}
+.link-btn {
+  background: none;
+  border: none;
+  color: #ffd54a;
+  cursor: pointer;
+}
+.bg-circle {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+}
+.c1 {
+  width: 350px;
+  height: 350px;
+  background: #b13bff55;
+  top: -100px;
+  right: -100px;
+}
+.c2 {
+  width: 300px;
+  height: 300px;
+  background: #ffd54a22;
+  bottom: -100px;
+  left: -100px;
 }
 </style>
