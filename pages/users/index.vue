@@ -161,6 +161,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from "vue";
+definePageMeta({ middleware: "auth" });
 
 /* ===== Search ===== */
 const search = ref("");

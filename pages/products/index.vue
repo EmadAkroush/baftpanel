@@ -212,6 +212,8 @@ import { ref, computed, onMounted } from "vue";
 
 const config = useRuntimeConfig();
 
+definePageMeta({ middleware: "auth" });
+
 /* ===== PRODUCTS ===== */
 const products = ref([]);
 

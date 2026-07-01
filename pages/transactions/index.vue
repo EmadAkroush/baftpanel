@@ -292,6 +292,7 @@
 
 <script setup>
 import { ref, computed } from "vue";
+definePageMeta({ middleware: "auth" });
 
 /* ===== FAKE DATA ===== */
 

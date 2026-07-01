@@ -77,6 +77,9 @@ import InputText from "primevue/inputtext";
 import InputNumber from "primevue/inputnumber";
 import Button from "primevue/button";
 
+definePageMeta({ middleware: "auth" });
+
+
 const loading = ref(false);
 
 const form = reactive({

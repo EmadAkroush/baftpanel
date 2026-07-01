@@ -70,6 +70,8 @@ import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import Button from "primevue/button";
 
+definePageMeta({ middleware: "auth" });
+
 const packages = ref([]);
 
 onMounted(async () => {

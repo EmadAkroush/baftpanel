@@ -77,6 +77,8 @@ import InputText from "primevue/inputtext";
 import InputNumber from "primevue/inputnumber";
 import Button from "primevue/button";
 
+definePageMeta({ middleware: "auth" });
+
 const route = useRoute();
 const id = route.params.id;
 

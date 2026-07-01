@@ -295,6 +295,8 @@ const config = useRuntimeConfig();
 
 const categories = ref([]);
 
+definePageMeta({ middleware: "auth" });
+
 /* ===== FORM ===== */
 
 const form = reactive({

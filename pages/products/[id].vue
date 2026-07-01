@@ -282,6 +282,8 @@ import { useRoute } from "vue-router";
 const config = useRuntimeConfig();
 const route = useRoute();
 
+definePageMeta({ middleware: "auth" });
+
 const productId = route.params.id;
 
 

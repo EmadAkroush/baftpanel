@@ -37,7 +37,7 @@
 
 <script setup>
 import { reactive, ref } from "vue"
-
+definePageMeta({ middleware: "auth" });
 /* COMPONENTS */
 
 
