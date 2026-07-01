@@ -69,15 +69,74 @@ function startTimer() {
   }, 1000);
 }
 
-async function sendOtp() {
-  // await $fetch('/api/auth/send-otp',{method:'POST',body:{phone:phone.value}})
-  step.value = 2;
-  startTimer();
-}
 
-async function verifyOtp() {
-  // await $fetch('/api/auth/verify-otp',{method:'POST',body:{phone:phone.value,code:otp.value}})
-}
+const sendOtp = async () => {
+  if (!phone.value) {
+    return alert("شماره موبایل را وارد کنید");
+  }
+
+
+
+  try {
+    await $fetch("api/auth/sendotp", {
+      method: "POST",
+      body: {
+        phone: phone.value,
+      },
+    });
+
+
+    // Set user in auth composable/store if available
+
+   
+
+    step.value = 2;
+     
+    startTimer();
+  } catch (err) {
+    console.error(err);
+
+    alert(err?.data?.message || "خطا در ارسال کد");
+  }
+
+
+};
+
+
+/* ===========================
+      VERIFY OTP
+=========================== */
+
+const verifyOtp = async () => {
+  if (!otp.value) {
+    return alert("کد تایید را وارد کنید");
+  }
+
+
+
+  try {
+    const res = await $fetch("api/auth/verifyotp", {
+      method: "POST",
+      body: {
+        phone: phone.value,
+        code: otp.value,
+      },
+    });
+  
+     authUser.value = res;
+
+    await  navigateTo("/account");
+  } catch (err) {
+    console.error(err);
+
+    alert(err?.data?.message || "کد تایید اشتباه است");
+  } finally {
+  
+    window.location.reload();
+  }
+
+ 
+};
 </script>
 
 <style scoped>
