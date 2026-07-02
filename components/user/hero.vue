@@ -13,35 +13,9 @@
 
     <div class="header-actions">
 
-      <button
-        class="header-action danger"
-        @click="$emit('toggle-block')"
-      >
-        <i
-          :class="
-            user.isActive
-              ? 'mdi mdi-account-cancel-outline'
-              : 'mdi mdi-account-check-outline'
-          "
-        ></i>
+  
 
-        <span>
-          {{
-            user.isActive
-              ? 'مسدود کردن'
-              : 'فعال‌سازی'
-          }}
-        </span>
-      </button>
-
-      <button
-        class="header-action primary"
-        @click="$emit('save')"
-      >
-        <i class="mdi mdi-content-save-outline"></i>
-
-        <span>ذخیره تغییرات</span>
-      </button>
+   
 
     </div>
 

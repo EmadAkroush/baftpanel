@@ -17,7 +17,7 @@
 
     <!-- Details Form -->
     <UserForm
-      :form="form"
+      :form="user"
     />
 
     <!-- Products -->
@@ -39,32 +39,64 @@
 import { reactive, ref } from "vue"
 definePageMeta({ middleware: "auth" });
 /* COMPONENTS */
+const route = useRoute();
+const userId = route.params.id;
+const user = ref();
 
+
+async function fetchCategories() {
+  try {
+     user.value = await $fetch("/api/users/details", {
+      query: {
+        id: userId
+      }})
+  console.log("USER =>", user.value);
+  
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+onMounted(fetchCategories);
+
+async function updateUsers() {
+
+
+  console.log("UPDATE ID =>", form.value._id);
+
+  await $fetch("/api/users/update", {
+    method: "PATCH",
+    query: {
+      id: form.value._id,
+    },
+    body: payload,
+  });
+}
 
 /* ===== USER ===== */
-const user = reactive({
-  firstName: "پارسا",
-  lastName: "محمدی",
-  email: "parsa@example.com",
-  phone: "09121234567",
+// const user = reactive({
+//   firstName: "پارسا",
+//   lastName: "محمدی",
+//   email: "parsa@example.com",
+//   phone: "09121234567",
 
-  wallet: "565656565654654646",
-  vxCode: "ne-84521",
+//   wallet: "565656565654654646",
+//   vxCode: "ne-84521",
 
-  mainBalance: 18250,
-  profitBalance: 5280,
-  referralBalance: 2100,
-  bonusBalance: 850,
+//   mainBalance: 18250,
+//   profitBalance: 5280,
+//   referralBalance: 2100,
+//   bonusBalance: 850,
 
-  totalIncome: 35200,
-  withdrawalTotalBalance: 11800,
+//   totalIncome: 35200,
+//   withdrawalTotalBalance: 11800,
 
-  leftVolume: 8200,
-  rightVolume: 6400,
+//   leftVolume: 8200,
+//   rightVolume: 6400,
 
-  isActive: true,
-  isVerified: true
-})
+//   isActive: true,
+//   isVerified: true
+// })
 
 /* ===== FORM ===== */
 const form = reactive({

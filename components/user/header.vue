@@ -3,31 +3,31 @@
 
     <div class="hero-left">
 
-      <div class="hero-avatar">
+      <!-- <div class="hero-avatar">
         {{ user.firstName.charAt(0) }}
-      </div>
+      </div> -->
 
       <div>
 
         <h1 class="hero-name">
-          {{ user.firstName }}
-          {{ user.lastName }}
+          {{ user?.firstName }}
+          {{ user?.lastName }}
         </h1>
 
         <p class="hero-email">
-          {{ user.email }}
+          {{ user?.email }}
         </p>
 
         <div class="hero-badges">
 
           <div
             class="status-badge"
-            :class="user.isActive ? 'active' : 'inactive'"
+            :class="user?.isActive ? 'active' : 'inactive'"
           >
             <span></span>
 
             {{
-              user.isActive
+              user?.isActive
                 ? 'فعال'
                 : 'غیرفعال'
             }}
@@ -36,14 +36,14 @@
           <div
             class="verify-badge"
             :class="
-              user.isVerified
+              user?.isVerified
                 ? 'verified'
                 : 'not-verified'
             "
           >
             <i
               :class="
-                user.isVerified
+                user?.isVerified
                   ? 'mdi mdi-check-decagram'
                   : 'mdi mdi-close-circle-outline'
               "
@@ -51,7 +51,7 @@
 
             <span>
               {{
-                user.isVerified
+                user?.isVerified
                   ? 'احراز شده'
                   : 'احراز نشده'
               }}
@@ -70,7 +70,7 @@
         <span>کل درآمد</span>
 
         <strong>
-          {{ format(user.totalIncome) }}
+          {{ format(user?.totalIncome) }}
         </strong>
       </div>
 
@@ -78,7 +78,7 @@
         <span>مجموع برداشت</span>
 
         <strong>
-          {{ format(user.withdrawalTotalBalance) }}
+          {{ format(user?.withdrawalTotalBalance) }}
         </strong>
       </div>
 
@@ -86,7 +86,7 @@
         <span> کد شبکه  </span>
 
         <strong>
-          {{ user.vxCode }}
+          {{ user?.vxCode }}
         </strong>
       </div>
 
