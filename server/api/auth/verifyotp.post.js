@@ -12,8 +12,15 @@ export default defineEventHandler(async (event) => {
         Accept: "application/json",
       },
     });
+    console.log("data $ ", data);
 
-    console.log("data", data);
+    // 🔥🔥 فقط ادمین اجازه ورود دارد
+    if (!data.user || data.user.role !== "ADMIN") {
+      throw createError({
+        statusCode: 403,
+        statusMessage: "Access denied. Admins only.",
+      });
+    }
 
     setCookie(event, "accessToken", data.accessToken, {
       httpOnly: true,
