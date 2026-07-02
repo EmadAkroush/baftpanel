@@ -112,7 +112,7 @@
               </td>
 
               <!-- Status -->
-              <td>
+              <!-- <td>
                 <div
                   class="status-badge"
                   :class="user.isActive ? 'active' : 'inactive'"
@@ -121,7 +121,7 @@
 
                   {{ user.isActive ? "فعال" : "غیرفعال" }}
                 </div>
-              </td>
+              </td> -->
 
               <!-- Verify -->
               <td>
