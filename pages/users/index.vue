@@ -216,7 +216,7 @@ const filteredUsers = computed(() => {
 
 /* ===== Navigate ===== */
 function goToDetails(id) {
-  navigateTo(`/super-admin/users/${id}`);
+  navigateTo(`/users/${id}`);
 }
 
 /* ===== Format ===== */
